@@ -1,0 +1,10 @@
+bin/
+
+#vscode
+.vscode/
+
+#terraform
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+.terraform.lock.hcl

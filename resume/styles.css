@@ -1,0 +1,100 @@
+body {
+    background-color: darksalmon;
+}
+
+#resume {
+    background-color: floralwhite;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 10px;
+    border-color: black;
+    padding: 2% 5%;
+    display: inline-block;
+}
+
+.category-title {
+    color: salmon;
+}
+
+.skills-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.skill-category {
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 10px;
+    border-color: black;
+    padding: 1%;
+    margin: 2px;
+}
+
+#viewers-box {
+    float: right;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 10px;
+    border-color: black;
+    padding: 0% 2%;
+}
+
+@media only screen and (max-width: 600px) {
+    body {
+        font-size: 8px;
+    }
+
+    #resume {
+        margin: 2% 2%;
+    }
+}
+
+@media only screen and (min-width: 600px) {
+    body {
+        font-size: 10px;
+    }
+
+    #resume {
+        margin: 2% 2%;
+    }
+}
+
+@media only screen and (min-width: 800px) {
+    body {
+        font-size: 12px;
+    }
+
+    #resume {
+        margin: 2% 5%;
+    }
+}
+
+@media only screen and (min-width: 1000px) {
+    body {
+        font-size: 14px;
+    }
+
+    #resume {
+        margin: 2% 10%;
+    }
+}
+
+@media only screen and (min-width: 1200px) {
+    body {
+        font-size: 16px;
+    }
+
+    #resume {
+        margin: 2% 15%;
+    }
+}
+
+@media only screen and (min-width: 1400px) {
+    body {
+        font-size: 18px;
+    }
+
+    #resume {
+        margin: 2% 20%;
+    }
+}

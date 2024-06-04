@@ -1,0 +1,12 @@
+---
+- name: Play for retrieving aws credentials
+  hosts: localhost
+
+  vars:
+    aws_credentials_file: "~/.aws/credentials"
+
+  tasks:
+    - name: Retrieve AWS credentials
+      ansible.builtin.set_fact:
+        aws_access_key_id: "{{ lookup('ini', 'aws_access_key_id', file=aws_credentials_file, section='default') }}"
+        aws_secret_access_key: "{{ lookup('ini', 'aws_secret_access_key', file=aws_credentials_file, section='default') }}"
