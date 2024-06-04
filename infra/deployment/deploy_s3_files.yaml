@@ -1,0 +1,16 @@
+---
+- name: Play for retrieving aws credentials
+  hosts: localhost
+
+  vars:
+    project_path: "/home/deck/git/cloud_resume"
+    s3_files_path: "{{ project_path }}/resume"
+    s3_bucket_name: "avivilloz"
+
+  tasks:
+    - name: Synchronize directory contents to S3 bucket
+      community.aws.s3_sync:
+        bucket: "{{ s3_bucket_name }}"
+        file_root: "{{ s3_files_path }}"
+        permission: "public-read"
+        delete: true
