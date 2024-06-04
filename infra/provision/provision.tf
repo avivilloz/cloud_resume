@@ -42,6 +42,8 @@ resource "aws_s3_bucket_website_configuration" "avivilloz" {
 
 resource "aws_cloudfront_distribution" "avivilloz" {
   enabled = true
+  aliases = "avivilloz.com"
+
   origin {
     domain_name = aws_s3_bucket.avivilloz.bucket_regional_domain_name
     origin_id   = aws_s3_bucket.avivilloz.bucket_regional_domain_name
