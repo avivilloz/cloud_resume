@@ -11,12 +11,12 @@ provider "aws" {
   region = "us-east-1"
 }
 
-resource "aws_s3_bucket" "resume_s3b" {
-  bucket = "resume-aviv-illoz"
+resource "aws_s3_bucket" "avivilloz_s3b" {
+  bucket = "avivilloz"
 }
 
-resource "aws_s3_bucket_public_access_block" "resume_s3b" {
-  bucket = aws_s3_bucket.resume_s3b.id
+resource "aws_s3_bucket_public_access_block" "avivilloz_s3b" {
+  bucket = aws_s3_bucket.avivilloz_s3b.id
 
   block_public_acls       = false
   block_public_policy     = false
