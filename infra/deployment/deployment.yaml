@@ -5,7 +5,7 @@
   vars:
     project_path: "/home/deck/git/cloud_resume"
     s3_files_path: "{{ project_path }}/resume"
-    s3_bucket_name: "avivilloz"
+    s3_bucket_name: "{{ project_name }}"
 
   tasks:
     - name: Synchronize directory contents to S3 bucket
