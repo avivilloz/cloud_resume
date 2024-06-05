@@ -15,17 +15,17 @@ provider "aws" {
   region = "us-east-1"
 }
 
-provider "cloudflare" {
-  # Configuration options
+variable "project_name" {
+  type = string
 }
 
-variable "project_name" {
+variable "domain_name" {
   type = string
 }
 
 locals {
   project_name = var.project_name
-  domain_name  = format("%s.com", local.project_name)
+  domain_name  = var.domain_name
 }
 
 resource "aws_s3_bucket" "static_website" {
@@ -57,16 +57,16 @@ resource "aws_s3_bucket_website_configuration" "static_website" {
   }
 }
 
-# resource "aws_acm_certificate" "acm_cert" {
-#   domain_name       = local.domain_name
-#   validation_method = "DNS"
+resource "aws_acm_certificate" "acm_cert" {
+  domain_name       = local.domain_name
+  validation_method = "DNS"
 
-#   subject_alternative_names = [
-#     "*.${local.domain_name}" # Add wildcard for subdomains (optional)
-#   ]
+  subject_alternative_names = [
+    "*.${local.domain_name}" # Add wildcard for subdomains
+  ]
 
-#   depends_on = [cloudflare_record.validation]
-# }
+  depends_on = [cloudflare_record.validation]
+}
 
 
 

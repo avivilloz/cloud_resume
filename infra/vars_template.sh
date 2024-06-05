@@ -7,4 +7,5 @@ infra_base_dir="$HOME/git/cloud_resume/infra"
 project_name=""
 domain_name=""
 
+# cloudflare related info for the purpose of creating DNS records
 export CLOUDFLARE_API_TOKEN=""
