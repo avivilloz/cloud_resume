@@ -4,10 +4,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "5.52.0"
     }
-    # cloudflare = {
-    #   source  = "cloudflare/cloudflare"
-    #   version = "4.34.0"
-    # }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "4.34.0"
+    }
   }
 }
 
@@ -15,21 +15,17 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# provider "cloudflare" {
-#   # Configuration options
-# }
-
-# variable "project_name" {
-#   type = string
-# }
+provider "cloudflare" {
+  # Configuration options
+}
 
 variable "project_name" {
   type = string
 }
 
 locals {
-  project_name      = var.project_name
-  domain_name       = format("%s.com", local.project_name)
+  project_name = var.project_name
+  domain_name  = format("%s.com", local.project_name)
 }
 
 resource "aws_s3_bucket" "static_website" {
