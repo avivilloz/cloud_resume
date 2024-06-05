@@ -6,4 +6,5 @@
 infra_base_dir="$HOME/git/cloud_resume/infra"
 project_name=""
 domain_name=""
+cloudflare_account_id=""
 cloudflare_api_token=""
