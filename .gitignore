@@ -1,9 +1,5 @@
 bin/
-temp
 vars.sh
-
-#vscode
-.vscode/
 
 #terraform
 .terraform/
