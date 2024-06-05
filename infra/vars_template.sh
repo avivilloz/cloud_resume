@@ -12,4 +12,3 @@ domain_name=""
 
 # cloudflare info for creating DNS records
 cloudflare_api_token=""
-cloudflare_zone_id=""

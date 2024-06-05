@@ -20,12 +20,7 @@ provider "cloudflare" {
 }
 
 variable "cloudflare_api_token" {
-  type = string
-  sensitive = true
-}
-
-variable "cloudflare_zone_id" {
-  type = string
+  type      = string
   sensitive = true
 }
 
@@ -78,10 +73,36 @@ resource "aws_acm_certificate" "static_website" {
   subject_alternative_names = [
     "*.${local.domain_name}"
   ]
-
-  depends_on = [cloudflare_record.validation]
 }
 
+resource "cloudflare_record" "static_website_acm_certificate" {
+  for_each = {
+    for dvo in aws_acm_certificate.static_website.domain_validation_options :
+    dvo.domain_name => {
+      name  = dvo.resource_record_name
+      value = dvo.resource_record_value
+      type  = dvo.resource_record_type
+    } if dvo.domain_name == aws_acm_certificate.static_website.domain_name
+  }
+
+  allow_overwrite = true
+  zone_id         = data.cloudflare_zone.static_website.zone_id
+  name            = each.value.name
+  value           = each.value.value
+  type            = each.value.type
+}
+
+data "cloudflare_zone" "static_website" {
+  name = local.domain_name
+}
+
+resource "aws_acm_certificate_validation" "static_website" {
+  certificate_arn = aws_acm_certificate.static_website.arn
+}
+
+output "certificate_arn" {
+  value = aws_acm_certificate_validation.static_website.certificate_arn
+}
 
 
 # resource "aws_cloudfront_distribution" "static_website" {
