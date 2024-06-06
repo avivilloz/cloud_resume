@@ -33,8 +33,9 @@ variable "domain_name" {
 }
 
 locals {
-  project_name = var.project_name
-  domain_name  = var.domain_name
+  project_name    = var.project_name
+  domain_name     = var.domain_name
+  api_domain_name = "api.${var.domain_name}"
 }
 
 resource "aws_s3_bucket" "static_website" {
@@ -82,7 +83,7 @@ resource "cloudflare_record" "static_website_acm_certificate" {
       name  = dvo.resource_record_name
       value = dvo.resource_record_value
       type  = dvo.resource_record_type
-    } if dvo.domain_name == aws_acm_certificate.static_website.domain_name
+    } if dvo.domain_name == local.domain_name
   }
 
   allow_overwrite = true
@@ -100,42 +101,61 @@ resource "aws_acm_certificate_validation" "static_website" {
   certificate_arn = aws_acm_certificate.static_website.arn
 }
 
-output "certificate_arn" {
-  value = aws_acm_certificate_validation.static_website.certificate_arn
+resource "aws_cloudfront_distribution" "static_website" {
+  enabled = true
+  aliases = [local.domain_name]
+
+  origin {
+    domain_name = aws_s3_bucket_website_configuration.static_website.website_endpoint
+    origin_id   = aws_s3_bucket_website_configuration.static_website.website_endpoint
+
+    custom_origin_config {
+      origin_protocol_policy = "http-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
+      http_port              = 80
+      https_port             = 443
+    }
+  }
+
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+      locations        = []
+    }
+  }
+
+  viewer_certificate {
+    acm_certificate_arn      = aws_acm_certificate_validation.static_website.certificate_arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
+  }
+
+  default_cache_behavior {
+    allowed_methods        = ["GET", "HEAD"]
+    cached_methods         = ["GET", "HEAD"]
+    target_origin_id       = aws_s3_bucket_website_configuration.static_website.website_endpoint
+    viewer_protocol_policy = "allow-all"
+    cache_policy_id        = "658327ea-f89d-4fab-a63d-7e88639e58f6"
+  }
 }
 
+resource "cloudflare_record" "static_website" {
+  allow_overwrite = true
+  zone_id         = data.cloudflare_zone.static_website.zone_id
+  name            = local.domain_name
+  value           = aws_cloudfront_distribution.static_website.domain_name
+  type            = "CNAME"
+}
 
-# resource "aws_cloudfront_distribution" "static_website" {
-#   enabled = true
-#   aliases = [local.domain_name]
+resource "aws_api_gateway_domain_name" "static_website_api" {
+  certificate_arn = aws_acm_certificate_validation.static_website.certificate_arn
+  domain_name     = local.api_domain_name
+}
 
-#   origin {
-#     domain_name = aws_s3_bucket.static_website.bucket_regional_domain_name
-#     origin_id   = aws_s3_bucket.static_website.bucket_regional_domain_name
-#   }
-
-#   restrictions {
-#     geo_restriction {
-#       restriction_type = "none"
-#       locations        = []
-#     }
-#   }
-
-#   viewer_certificate {
-#     cloudfront_default_certificate = true
-#   }
-
-#   default_cache_behavior {
-#     allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-#     cached_methods         = ["GET", "HEAD"]
-#     target_origin_id       = aws_s3_bucket.static_website.bucket_regional_domain_name
-#     viewer_protocol_policy = "allow-all"
-#     forwarded_values {
-#       query_string = false
-
-#       cookies {
-#         forward = "none"
-#       }
-#     }
-#   }
-# }
+resource "cloudflare_record" "static_website" {
+  allow_overwrite = true
+  zone_id         = data.cloudflare_zone.static_website.zone_id
+  name            = local.api_domain_name
+  value           = aws_api_gateway_domain_name.static_website_api.cloudfront_domain_name
+  type            = "CNAME"
+}
