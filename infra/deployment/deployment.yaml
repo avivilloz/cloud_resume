@@ -3,8 +3,7 @@
   hosts: localhost
 
   vars:
-    project_path: "/home/deck/git/cloud_resume"
-    s3_files_path: "{{ project_path }}/resume"
+    s3_files_path: "{{ s3_files_path }}"
     s3_bucket_name: "{{ project_name }}"
 
   tasks:

@@ -32,14 +32,20 @@ variable "domain_name" {
   type = string
 }
 
+variable "api_json_path" {
+  type = string
+}
+
+variable "get_views_count_path" {
+  type = string
+}
+
 locals {
-  project_name    = var.project_name
-  domain_name     = var.domain_name
   api_domain_name = "api.${var.domain_name}"
 }
 
 resource "aws_s3_bucket" "static_website" {
-  bucket = local.project_name
+  bucket = var.project_name
 }
 
 resource "aws_s3_bucket_ownership_controls" "static_website" {
@@ -68,11 +74,11 @@ resource "aws_s3_bucket_website_configuration" "static_website" {
 }
 
 resource "aws_acm_certificate" "static_website" {
-  domain_name       = local.domain_name
+  domain_name       = var.domain_name
   validation_method = "DNS"
 
   subject_alternative_names = [
-    "*.${local.domain_name}"
+    "*.${var.domain_name}"
   ]
 }
 
@@ -83,7 +89,7 @@ resource "cloudflare_record" "static_website_acm_certificate" {
       name  = dvo.resource_record_name
       value = dvo.resource_record_value
       type  = dvo.resource_record_type
-    } if dvo.domain_name == local.domain_name
+    } if dvo.domain_name == var.domain_name
   }
 
   allow_overwrite = true
@@ -94,7 +100,7 @@ resource "cloudflare_record" "static_website_acm_certificate" {
 }
 
 data "cloudflare_zone" "static_website" {
-  name = local.domain_name
+  name = var.domain_name
 }
 
 resource "aws_acm_certificate_validation" "static_website" {
@@ -103,7 +109,7 @@ resource "aws_acm_certificate_validation" "static_website" {
 
 resource "aws_cloudfront_distribution" "static_website" {
   enabled = true
-  aliases = [local.domain_name]
+  aliases = [var.domain_name]
 
   origin {
     domain_name = aws_s3_bucket_website_configuration.static_website.website_endpoint
@@ -142,7 +148,7 @@ resource "aws_cloudfront_distribution" "static_website" {
 resource "cloudflare_record" "static_website" {
   allow_overwrite = true
   zone_id         = data.cloudflare_zone.static_website.zone_id
-  name            = local.domain_name
+  name            = var.domain_name
   value           = aws_cloudfront_distribution.static_website.domain_name
   type            = "CNAME"
 }
@@ -152,10 +158,54 @@ resource "aws_api_gateway_domain_name" "static_website_api" {
   domain_name     = local.api_domain_name
 }
 
-resource "cloudflare_record" "static_website" {
+resource "cloudflare_record" "static_website_api" {
   allow_overwrite = true
   zone_id         = data.cloudflare_zone.static_website.zone_id
   name            = local.api_domain_name
   value           = aws_api_gateway_domain_name.static_website_api.cloudfront_domain_name
   type            = "CNAME"
 }
+
+resource "aws_dynamodb_table" "static_website_views_count" {
+  name         = "${var.project_name}_views_count"
+  hash_key     = "id"
+  billing_mode = "PAY_PER_REQUEST"
+
+  attribute {
+    name = "id"
+    type = "N"
+  }
+}
+
+data "aws_iam_policy_document" "lambda_dynamodb_full_access" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "dynamodb:*"
+    ]
+    resources = ["arn:aws:dynamodb:*:*:*"]
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "lambda_dynamodb_full_access" {
+  name               = "lambda_dynamodb_full_access"
+  assume_role_policy = data.aws_iam_policy_document.lambda_dynamodb_full_access.json
+}
+
+
+resource "aws_lambda_function" "static_website_api_views_count_get" {
+  filename      = var.get_views_count_path
+  function_name = "get_views_count"
+  handler       = "get_views_count"
+  runtime       = "python3.12"
+  role          = aws_iam_role.lambda_dynamodb_full_access.arn
+}
+
+# resource "aws_api_gateway_rest_api" "static_website_api" {
+#   name = var.project_name
+#   body = file(var.api_json_path)
+# }

@@ -1,0 +1,15 @@
+openapi: 3.0.0
+info:
+  title: Hello World API
+  version: "1.0"
+paths:
+  /hello:
+    get:
+      summary: Get a friendly greeting
+      responses:
+        "200":
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string

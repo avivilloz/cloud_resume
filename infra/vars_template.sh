@@ -4,7 +4,11 @@
 # file localy as vars.sh and assign appropriate values to variables.
 
 # paths
-infra_base_dir="$HOME/git/cloud_resume/infra"
+project_base_dir="$HOME/git/cloud_resume"
+frontend_dir="$projects_base_dir/frontend"
+infra_base_dir="$projects_base_dir/infra"
+api_json_path="$projects_base_dir/backend/openapi.yaml"
+get_views_count_path="$projects_base_dir/backend/get_views_count.py"
 
 # project
 project_name=""
