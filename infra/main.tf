@@ -12,11 +12,15 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-east-1"
+  region = var.aws_region
 }
 
 provider "cloudflare" {
   api_token = var.cloudflare_api_token
+}
+
+variable "aws_region" {
+  type = string
 }
 
 variable "cloudflare_api_token" {
@@ -24,6 +28,9 @@ variable "cloudflare_api_token" {
   sensitive = true
 }
 
+variable "aws_account_id" {
+  type = string
+}
 variable "project_name" {
   type = string
 }
@@ -36,12 +43,9 @@ variable "api_json_path" {
   type = string
 }
 
-variable "get_views_count_path" {
-  type = string
-}
-
 locals {
-  api_domain_name = "api.${var.domain_name}"
+  views_count_table_name = "${var.project_name}_views_count"
+  api_domain_name        = "api.${var.domain_name}"
 }
 
 resource "aws_s3_bucket" "static_website" {
@@ -167,7 +171,7 @@ resource "cloudflare_record" "static_website_api" {
 }
 
 resource "aws_dynamodb_table" "static_website_views_count" {
-  name         = "${var.project_name}_views_count"
+  name         = local.views_count_table_name
   hash_key     = "id"
   billing_mode = "PAY_PER_REQUEST"
 
@@ -177,13 +181,18 @@ resource "aws_dynamodb_table" "static_website_views_count" {
   }
 }
 
-data "aws_iam_policy_document" "lambda_dynamodb_full_access" {
+data "aws_iam_policy_document" "lambda_dynamodb_full_access_policy" {
   statement {
-    effect = "Allow"
-    actions = [
-      "dynamodb:*"
-    ]
-    resources = ["arn:aws:dynamodb:*:*:*"]
+    effect    = "Allow"
+    actions   = ["dynamodb:*"]
+    resources = [aws_dynamodb_table.static_website_views_count.arn]
+  }
+}
+
+data "aws_iam_policy_document" "lambda_dynamodb_full_access_role" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
     principals {
       type        = "Service"
       identifiers = ["lambda.amazonaws.com"]
@@ -191,21 +200,23 @@ data "aws_iam_policy_document" "lambda_dynamodb_full_access" {
   }
 }
 
-resource "aws_iam_role" "lambda_dynamodb_full_access" {
-  name               = "lambda_dynamodb_full_access"
-  assume_role_policy = data.aws_iam_policy_document.lambda_dynamodb_full_access.json
+resource "aws_iam_policy" "lambda_dynamodb_full_access" {
+  name   = "lambda_dynamodb_full_access"
+  policy = data.aws_iam_policy_document.lambda_dynamodb_full_access_policy.json
 }
 
+resource "aws_iam_role" "lambda_dynamodb_full_access" {
+  name               = "lambda_dynamodb_full_access"
+  assume_role_policy = data.aws_iam_policy_document.lambda_dynamodb_full_access_role.json
+}
 
-resource "aws_lambda_function" "static_website_api_views_count_get" {
-  filename      = var.get_views_count_path
-  function_name = "get_views_count"
-  handler       = "get_views_count"
-  runtime       = "python3.12"
-  role          = aws_iam_role.lambda_dynamodb_full_access.arn
+resource "aws_iam_role_policy_attachment" "lambda_dynamodb_full_access" {
+  role       = aws_iam_role.lambda_dynamodb_full_access.name
+  policy_arn = aws_iam_policy.lambda_dynamodb_full_access.arn
 }
 
 # resource "aws_api_gateway_rest_api" "static_website_api" {
 #   name = var.project_name
 #   body = file(var.api_json_path)
 # }
+

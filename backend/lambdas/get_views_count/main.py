@@ -1,9 +1,10 @@
 import boto3
 import json
+import os
 
 
-def get_views_count(event, context):
-    table_name = "avivilloz_views_count"
+def handler(event, context):
+    table_name = os.environ['table_name']
     key = {"id": 0}
 
     dynamodb = boto3.resource("dynamodb")

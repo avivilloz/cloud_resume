@@ -1,9 +1,9 @@
 
-async function setViewersCount() {
+async function setViewsCount() {
     const views = document.getElementById('views');
 
     try {
-        const getUrl = 'https://api.avivilloz.com/total-viewers';
+        const getUrl = 'https://api.avivilloz.com/views-count';
 
         const response = await fetch(getUrl);
         if (!response.ok) {
@@ -14,10 +14,10 @@ async function setViewersCount() {
         views.textContent = data.body.value;
     } catch (error) {
         console.error('Error:', error);
-        viewers.textContent = '?';
+        views.textContent = '?';
     }
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    setViewersCount();
+    setViewsCount();
 });
