@@ -139,7 +139,7 @@ data "aws_iam_policy_document" "lambda_dynamodb_full_access_policy" {
   statement {
     effect    = "Allow"
     actions   = ["dynamodb:*"]
-    resources = [aws_dynamodb_table.static_website_views_count.arn]
+    resources = ["*"]
   }
 }
 
@@ -148,8 +148,11 @@ data "aws_iam_policy_document" "lambda_dynamodb_full_access_role" {
     effect  = "Allow"
     actions = ["sts:AssumeRole"]
     principals {
-      type        = "Service"
-      identifiers = ["lambda.amazonaws.com"]
+      type = "Service"
+      identifiers = [
+        "lambda.amazonaws.com",
+        "apigateway.amazonaws.com"
+      ]
     }
   }
 }

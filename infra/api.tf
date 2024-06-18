@@ -3,9 +3,45 @@ variable "openapi_path" {
 }
 
 locals {
-  api_name        = var.project_name
-  openapi_path    = var.openapi_path
-  domain_name     = var.domain_name
+  api_name     = var.project_name
+  openapi_path = var.openapi_path
+  domain_name  = var.domain_name
+}
+
+data "aws_iam_policy_document" "api_gateway_lambda_invoke_policy" {
+  statement {
+    effect    = "Allow"
+    actions   = ["lambda:InvokeFunction"]
+    resources = ["*"]
+  }
+}
+
+data "aws_iam_policy_document" "api_gateway_lambda_invoke_role" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+    principals {
+      type = "Service"
+      identifiers = [
+        "apigateway.amazonaws.com"
+      ]
+    }
+  }
+}
+
+resource "aws_iam_policy" "api_gateway_lambda_invoke" {
+  name   = "api_gateway_lambda_invoke"
+  policy = data.aws_iam_policy_document.api_gateway_lambda_invoke_policy.json
+}
+
+resource "aws_iam_role" "api_gateway_lambda_invoke" {
+  name               = "api_gateway_lambda_invoke"
+  assume_role_policy = data.aws_iam_policy_document.api_gateway_lambda_invoke_role.json
+}
+
+resource "aws_iam_role_policy_attachment" "api_gateway_lambda_invoke" {
+  role       = aws_iam_role.api_gateway_lambda_invoke.name
+  policy_arn = aws_iam_policy.api_gateway_lambda_invoke.arn
 }
 
 resource "aws_api_gateway_rest_api" "api" {
@@ -14,7 +50,7 @@ resource "aws_api_gateway_rest_api" "api" {
   body = templatefile(local.openapi_path, {
     domain_name                         = local.domain_name
     get_views_count_lambda_arn          = aws_lambda_function.get_views_count.invoke_arn
-    get_views_count_lambda_iam_role_arn = aws_iam_role.lambda_dynamodb_full_access.arn
+    get_views_count_lambda_iam_role_arn = aws_iam_role.api_gateway_lambda_invoke.arn
   })
 
   endpoint_configuration {

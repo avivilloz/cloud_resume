@@ -41,4 +41,10 @@ def handler(event, context):
             ),
         }
 
-    return {"statusCode": 200, "body": {"value": str(count)}}
+    return {
+        "statusCode": 200,
+        "headers": {
+            "Access-Control-Allow-Origin": "https://avivilloz.com"  # Replace with your allowed origin
+        },
+        "body": json.dumps({"value": str(count)}),
+    }
