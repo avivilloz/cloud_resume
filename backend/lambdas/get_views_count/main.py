@@ -4,7 +4,7 @@ import os
 
 
 def handler(event, context):
-    table_name = os.environ['table_name']
+    table_name = os.environ["table_name"]
     key = {"id": 0}
 
     dynamodb = boto3.resource("dynamodb")
@@ -12,19 +12,18 @@ def handler(event, context):
 
     try:
         response = table.get_item(Key=key)
-        item = response.get("Item", {})
     except Exception as e:
-        error_code = e.response["Error"]["Code"]
-        if error_code == "ResourceNotFoundException":
-            item = key | {"views_count": 0}
-            table.put_item(Item=item)
-        else:
-            return {
-                "statusCode": 500,
-                "body": json.dumps(
-                    {"message": "Error fetching views_count", "error_code": error_code}
-                ),
-            }
+        return {
+            "statusCode": 500,
+            "body": json.dumps(
+                {"message": "Error fetching views_count", "exception": e}
+            ),
+        }
+
+    item = response.get("Item", None)
+    if not item:
+        item = key | {"views_count": 0}
+        table.put_item(Item=item)
 
     count = item.get("views_count") + 1
 
@@ -37,7 +36,9 @@ def handler(event, context):
     except Exception as e:
         return {
             "statusCode": 500,
-            "body": json.dumps({"message": "Error updating views_count"}),
+            "body": json.dumps(
+                {"message": "Error updating views_count", "exception": e}
+            ),
         }
 
     return {"statusCode": 200, "body": {"value": str(count)}}
