@@ -7,7 +7,7 @@ terraform -chdir="$infra_base_dir" apply -auto-approve \
     -var="project_name=$project_name" \
     -var="domain_name=$domain_name" \
     -var="cloudflare_api_token=$cloudflare_api_token" \
-    -var="api_json_path=$api_json_path" \
+    -var="openapi_path=$openapi_path" \
     -var="bin_dir=$bin_dir" \
     -var="get_views_count_lambda_dir=$get_views_count_lambda_dir" \
     -var="aws_account_id=$aws_account_id" \

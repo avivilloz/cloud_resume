@@ -39,10 +39,6 @@ variable "domain_name" {
   type = string
 }
 
-variable "api_json_path" {
-  type = string
-}
-
 locals {
   views_count_table_name = "${var.project_name}_views_count"
   api_domain_name        = "api.${var.domain_name}"
@@ -149,27 +145,6 @@ resource "aws_cloudfront_distribution" "static_website" {
   }
 }
 
-resource "cloudflare_record" "static_website" {
-  allow_overwrite = true
-  zone_id         = data.cloudflare_zone.static_website.zone_id
-  name            = var.domain_name
-  value           = aws_cloudfront_distribution.static_website.domain_name
-  type            = "CNAME"
-}
-
-resource "aws_api_gateway_domain_name" "static_website_api" {
-  certificate_arn = aws_acm_certificate_validation.static_website.certificate_arn
-  domain_name     = local.api_domain_name
-}
-
-resource "cloudflare_record" "static_website_api" {
-  allow_overwrite = true
-  zone_id         = data.cloudflare_zone.static_website.zone_id
-  name            = local.api_domain_name
-  value           = aws_api_gateway_domain_name.static_website_api.cloudfront_domain_name
-  type            = "CNAME"
-}
-
 resource "aws_dynamodb_table" "static_website_views_count" {
   name         = local.views_count_table_name
   hash_key     = "id"
@@ -214,9 +189,3 @@ resource "aws_iam_role_policy_attachment" "lambda_dynamodb_full_access" {
   role       = aws_iam_role.lambda_dynamodb_full_access.name
   policy_arn = aws_iam_policy.lambda_dynamodb_full_access.arn
 }
-
-# resource "aws_api_gateway_rest_api" "static_website_api" {
-#   name = var.project_name
-#   body = file(var.api_json_path)
-# }
-

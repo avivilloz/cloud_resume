@@ -16,7 +16,7 @@ data "archive_file" "get_views_count_lambda_zip" {
   output_path = local.get_views_count_lambda_zip_path
 }
 
-resource "aws_lambda_function" "static_website_api_views_count_get" {
+resource "aws_lambda_function" "get_views_count" {
   filename         = local.get_views_count_lambda_zip_path
   function_name    = "${var.project_name}_get_views_count"
   handler          = "main.handler"

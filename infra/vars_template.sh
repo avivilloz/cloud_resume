@@ -9,7 +9,7 @@ bin_dir="$project_base_dir/bin"
 frontend_dir="$project_base_dir/frontend"
 backend_dir="$project_base_dir/backend"
 infra_base_dir="$project_base_dir/infra"
-api_json_path="$backend_dir/api/openapi.yaml"
+openapi_path="$backend_dir/api/openapi.yaml"
 
 # lambdas paths
 lambdas_dir="$backend_dir/lambdas"
