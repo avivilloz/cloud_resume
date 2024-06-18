@@ -10,6 +10,7 @@ frontend_dir="$project_base_dir/frontend"
 backend_dir="$project_base_dir/backend"
 infra_base_dir="$project_base_dir/infra"
 openapi_path="$backend_dir/api/openapi.yaml"
+deployment_file_path="$infra_base_dir/deployment.yaml"
 
 # lambdas paths
 lambdas_dir="$backend_dir/lambdas"
