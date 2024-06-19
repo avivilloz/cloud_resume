@@ -1,10 +1,10 @@
-resource "aws_cloudfront_distribution" "static_website" {
+resource "aws_cloudfront_distribution" "cloudfront" {
   enabled = true
   aliases = [var.domain_name]
 
   origin {
-    domain_name = aws_s3_bucket_website_configuration.static_website.website_endpoint
-    origin_id   = aws_s3_bucket_website_configuration.static_website.website_endpoint
+    domain_name = aws_s3_bucket_website_configuration.s3.website_endpoint
+    origin_id   = aws_s3_bucket_website_configuration.s3.website_endpoint
 
     custom_origin_config {
       origin_protocol_policy = "http-only"
@@ -22,7 +22,7 @@ resource "aws_cloudfront_distribution" "static_website" {
   }
 
   viewer_certificate {
-    acm_certificate_arn      = aws_acm_certificate_validation.static_website.certificate_arn
+    acm_certificate_arn      = aws_acm_certificate_validation.certificate.certificate_arn
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
   }
@@ -30,7 +30,7 @@ resource "aws_cloudfront_distribution" "static_website" {
   default_cache_behavior {
     allowed_methods        = ["GET", "HEAD"]
     cached_methods         = ["GET", "HEAD"]
-    target_origin_id       = aws_s3_bucket_website_configuration.static_website.website_endpoint
+    target_origin_id       = aws_s3_bucket_website_configuration.s3.website_endpoint
     viewer_protocol_policy = "allow-all"
     cache_policy_id        = "658327ea-f89d-4fab-a63d-7e88639e58f6"
   }

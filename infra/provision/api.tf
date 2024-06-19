@@ -31,7 +31,7 @@ resource "aws_api_gateway_stage" "api" {
 }
 
 resource "aws_api_gateway_domain_name" "api" {
-  certificate_arn = aws_acm_certificate_validation.static_website.certificate_arn
+  certificate_arn = aws_acm_certificate_validation.certificate.certificate_arn
   domain_name     = local.api_domain_name
 }
 

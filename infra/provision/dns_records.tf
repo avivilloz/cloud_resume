@@ -1,4 +1,4 @@
-data "cloudflare_zone" "static_website" {
+data "cloudflare_zone" "zone" {
   name = var.domain_name
 }
 
@@ -7,7 +7,7 @@ data "cloudflare_zone" "static_website" {
 
 resource "cloudflare_record" "acm_certificate" {
   for_each = {
-    for dvo in aws_acm_certificate.static_website.domain_validation_options :
+    for dvo in aws_acm_certificate.certificate.domain_validation_options :
     dvo.domain_name => {
       name  = dvo.resource_record_name
       value = dvo.resource_record_value
@@ -16,7 +16,7 @@ resource "cloudflare_record" "acm_certificate" {
   }
 
   allow_overwrite = true
-  zone_id         = data.cloudflare_zone.static_website.zone_id
+  zone_id         = data.cloudflare_zone.zone.zone_id
   name            = each.value.name
   value           = each.value.value
   type            = each.value.type
@@ -27,9 +27,9 @@ resource "cloudflare_record" "acm_certificate" {
 
 resource "cloudflare_record" "website" {
   allow_overwrite = true
-  zone_id         = data.cloudflare_zone.static_website.zone_id
+  zone_id         = data.cloudflare_zone.zone.zone_id
   name            = var.domain_name
-  value           = aws_cloudfront_distribution.static_website.domain_name
+  value           = aws_cloudfront_distribution.cloudfront.domain_name
   type            = "CNAME"
 }
 
@@ -38,7 +38,7 @@ resource "cloudflare_record" "website" {
 
 resource "cloudflare_record" "api" {
   allow_overwrite = true
-  zone_id         = data.cloudflare_zone.static_website.zone_id
+  zone_id         = data.cloudflare_zone.zone.zone_id
   name            = local.api_domain_name
   value           = aws_api_gateway_domain_name.api.cloudfront_domain_name
   type            = "CNAME"
