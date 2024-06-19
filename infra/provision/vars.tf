@@ -36,6 +36,7 @@ variable "get_views_count_lambda_dir" {
 }
 
 locals {
+  s3_bucket_name                  = var.project_name
   api_name                        = var.project_name
   api_domain_name                 = "api.${var.domain_name}"
   views_count_table_name          = "${var.project_name}_views_count"

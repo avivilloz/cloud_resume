@@ -1,5 +1,14 @@
 resource "aws_s3_bucket" "static_website" {
-  bucket = var.project_name
+  bucket        = local.s3_bucket_name
+  force_destroy = true
+}
+
+resource "aws_s3_bucket_versioning" "static_website" {
+  bucket = aws_s3_bucket.static_website.id
+
+  versioning_configuration {
+    status = "Disabled"
+  }
 }
 
 resource "aws_s3_bucket_ownership_controls" "static_website" {
