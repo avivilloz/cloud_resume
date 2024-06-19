@@ -5,12 +5,12 @@
 
 # paths
 project_base_dir="$HOME/git/cloud_resume"
-bin_dir="$project_base_dir/bin"
 frontend_dir="$project_base_dir/frontend"
 backend_dir="$project_base_dir/backend"
-infra_base_dir="$project_base_dir/infra"
+infra_dir="$project_base_dir/infra"
+temp_dir="$project_base_dir/temp"
 openapi_path="$backend_dir/api/openapi.yaml"
-deployment_file_path="$infra_base_dir/deployment.yaml"
+deployment_file_path="$infra_dir/deployment/deployment.yaml"
 
 # lambdas paths
 lambdas_dir="$backend_dir/lambdas"
@@ -23,6 +23,3 @@ domain_name=""
 
 # cloudflare info for creating DNS records
 cloudflare_api_token=""
-
-# aws info
-aws_account_id=""

@@ -1,11 +1,3 @@
-variable "deployment_file_path" {
-  type = string
-}
-
-variable "s3_files_dir" {
-  type = string
-}
-
 resource "ansible_playbook" "deployment" {
   playbook   = var.deployment_file_path
   name       = "localhost"

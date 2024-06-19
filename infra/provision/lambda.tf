@@ -1,15 +1,3 @@
-variable "bin_dir" {
-  type = string
-}
-
-variable "get_views_count_lambda_dir" {
-  type = string
-}
-
-locals {
-  get_views_count_lambda_zip_path = "${var.bin_dir}/get_views_count_lambda.zip"
-}
-
 data "archive_file" "get_views_count_lambda_zip" {
   type        = "zip"
   source_dir  = var.get_views_count_lambda_dir
