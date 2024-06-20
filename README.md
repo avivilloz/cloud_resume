@@ -5,7 +5,7 @@
 # Technologies Used:
 
 - Front-end: HTML/CSS/Javascript
-- Back-end: Python/Lambda/API Gateway/DynamoDB
+- Back-end: Python/Lambda/API Gateway/OpenAPI/DynamoDB
 - AWS services: S3/API Gateway/DynamoDB/CloudFront/Lambda
 - IaC: Terraform/Ansible
 - Tests: Python/Pytest
