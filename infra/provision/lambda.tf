@@ -1,12 +1,12 @@
 data "archive_file" "get_views_count_lambda_zip" {
   type        = "zip"
-  source_dir  = var.get_views_count_lambda_dir
+  source_dir  = local.get_views_count_lambda_dir
   output_path = local.get_views_count_lambda_zip_path
 }
 
 resource "aws_lambda_function" "get_views_count" {
   filename         = local.get_views_count_lambda_zip_path
-  function_name    = "${var.project_name}_get_views_count"
+  function_name    = local.get_views_count_lambda_function_name
   handler          = "main.handler"
   runtime          = "python3.12"
   role             = aws_iam_role.lambda_dynamodb_full_access.arn

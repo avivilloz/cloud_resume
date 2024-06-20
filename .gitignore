@@ -1,10 +1,10 @@
 # general
 .vscode/
 temp/
-vars.sh
 
 # terraform
 .terraform/
 .terraform.lock.hcl
+terraform.tfvars
 terraform.tfstate
 terraform.tfstate.backup
