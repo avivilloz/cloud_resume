@@ -3,6 +3,14 @@ import json
 import os
 
 
+def get_response(status: int, body: dict):
+    return {
+        "statusCode": status,
+        "headers": {"Access-Control-Allow-Origin": "*"},
+        "body": json.dumps(body),
+    }
+
+
 def handler(event, context):
     table_name = os.environ["table_name"]
     key = {"id": 0}
@@ -13,12 +21,8 @@ def handler(event, context):
     try:
         response = table.get_item(Key=key)
     except Exception as e:
-        return {
-            "statusCode": 500,
-            "body": json.dumps(
-                {"message": "Error fetching views_count", "exception": e}
-            ),
-        }
+        message = f"Error fetching views_count. Exception: {e}"
+        return get_response(status=500, body={"message": message})
 
     item = response.get("Item", None)
     if not item:
@@ -34,17 +38,7 @@ def handler(event, context):
             ExpressionAttributeValues={":val": count},
         )
     except Exception as e:
-        return {
-            "statusCode": 500,
-            "body": json.dumps(
-                {"message": "Error updating views_count", "exception": e}
-            ),
-        }
+        message = f"Error updating views_count. Exception: {e}"
+        return get_response(status=500, body={"message": message})
 
-    return {
-        "statusCode": 200,
-        "headers": {
-            "Access-Control-Allow-Origin": "https://avivilloz.com"  # Replace with your allowed origin
-        },
-        "body": json.dumps({"value": str(count)}),
-    }
+    return get_response(status=200, body={"value": str(count)})
