@@ -29,7 +29,7 @@ def handler(event, context):
         item = key | {"views_count": 0}
         table.put_item(Item=item)
 
-    count = item.get("views_count") + 1
+    count = int(item.get("views_count") + 1)
 
     try:
         table.update_item(
@@ -41,4 +41,4 @@ def handler(event, context):
         message = f"Error updating views_count. Exception: {e}"
         return get_response(status=500, body={"message": message})
 
-    return get_response(status=200, body={"value": str(count)})
+    return get_response(status=200, body={"value": count})

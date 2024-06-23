@@ -17,10 +17,10 @@ def handler(event, context):
 
     dynamodb = boto3.resource("dynamodb")
     table = dynamodb.Table(table_name)
-
-    value = event.get("value", None)
-    if value == None:
-        message = f"Integer value required. No value provided."
+    
+    value = json.loads(event.get("body")).get("value")
+    if value == None or type(value) != int:
+        message = f"Error reading event input. Event: {event}."
         return get_response(status=500, body={"message": message})
 
     try:
@@ -33,4 +33,4 @@ def handler(event, context):
         message = f"Error updating views_count. Exception: {e}"
         return get_response(status=500, body={"message": message})
 
-    return get_response(status=200, body={"value": str(value)})
+    return get_response(status=200, body={"value": value})
