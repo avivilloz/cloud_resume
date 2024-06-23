@@ -4,15 +4,31 @@
   connection: local
 
   vars:
+    temp_dir: "{{ temp_dir }}"
     s3_files_dir: "{{ s3_files_dir }}"
     s3_bucket_name: "{{ s3_bucket_name }}"
+    s3_sync_dir: "{{ temp_dir }}/s3_sync"
+    script_js_path: "{{ s3_sync_dir }}/script.js"
+    views_count_api_endpoint: "{{ views_count_api_endpoint }}"
     cloudfront_distribution_id: "{{ cloudfront_distribution_id }}"
 
   tasks:
+    - name: Copy s3 files to s3_sync dir
+      ansible.builtin.copy:
+        src: "{{ s3_files_dir }}/"
+        dest: "{{ s3_sync_dir }}"
+        mode: "0755"
+
+    - name: Inject views-count API endpoint into script.js file
+      ansible.builtin.replace:
+        path: "{{ script_js_path }}"
+        regexp: "__VIEWS_COUNT_API_ENDPOINT__"
+        replace: "{{ views_count_api_endpoint }}"
+
     - name: Synchronize directory contents to S3 bucket
       community.aws.s3_sync:
         bucket: "{{ s3_bucket_name }}"
-        file_root: "{{ s3_files_dir }}"
+        file_root: "{{ s3_sync_dir }}"
         permission: "public-read"
         delete: true
 

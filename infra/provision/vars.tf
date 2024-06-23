@@ -55,5 +55,6 @@ locals {
   get_views_count_lambda_function_name = "${var.project_name}_get_views_count"
 
   # deployment
-  deployment_file_path = "${local.infra_dir}/deployment/deployment.yaml"
+  deployment_file_path     = "${local.infra_dir}/deployment/deployment.yaml"
+  views_count_api_endpoint = "https://${local.api_domain_name}/views-count"
 }
