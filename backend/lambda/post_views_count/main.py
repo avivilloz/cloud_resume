@@ -18,27 +18,19 @@ def handler(event, context):
     dynamodb = boto3.resource("dynamodb")
     table = dynamodb.Table(table_name)
 
-    try:
-        response = table.get_item(Key=key)
-    except Exception as e:
-        message = f"Error fetching views_count. Exception: {e}"
+    value = event.get("value", None)
+    if value == None:
+        message = f"Integer value required. No value provided."
         return get_response(status=500, body={"message": message})
-
-    item = response.get("Item", None)
-    if not item:
-        item = key | {"views_count": 0}
-        table.put_item(Item=item)
-
-    count = item.get("views_count") + 1
 
     try:
         table.update_item(
             Key=key,
             UpdateExpression="SET views_count = :val",
-            ExpressionAttributeValues={":val": count},
+            ExpressionAttributeValues={":val": value},
         )
     except Exception as e:
         message = f"Error updating views_count. Exception: {e}"
         return get_response(status=500, body={"message": message})
 
-    return get_response(status=200, body={"value": str(count)})
+    return get_response(status=200, body={"value": str(value)})

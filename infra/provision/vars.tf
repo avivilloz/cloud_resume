@@ -49,10 +49,15 @@ locals {
   openapi_path    = "${local.backend_dir}/api/openapi.yaml"
 
   # lambda
-  lambda_dir                          = "${local.backend_dir}/lambda"
+  lambda_dir = "${local.backend_dir}/lambda"
+
   get_views_count_lambda_dir           = "${local.lambda_dir}/get_views_count"
   get_views_count_lambda_zip_path      = "${local.temp_dir}/get_views_count_lambda.zip"
   get_views_count_lambda_function_name = "${var.project_name}_get_views_count"
+
+  post_views_count_lambda_dir           = "${local.lambda_dir}/post_views_count"
+  post_views_count_lambda_zip_path      = "${local.temp_dir}/post_views_count_lambda.zip"
+  post_views_count_lambda_function_name = "${var.project_name}_post_views_count"
 
   # deployment
   deployment_file_path     = "${local.infra_dir}/deployment/deployment.yaml"

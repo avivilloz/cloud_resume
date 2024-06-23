@@ -13,7 +13,7 @@ paths:
         type: aws_proxy
         httpMethod: POST
         uri: ${get_views_count_lambda_arn}
-        credentials: ${get_views_count_lambda_iam_role_arn}
+        credentials: ${iam_role_arn}
         passthroughBehavior: "never"
         responses:
           default:
@@ -45,15 +45,70 @@ paths:
                   message:
                     type: string
                     description: Error message
-                  exception:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: integer
+      x-amazon-apigateway-integration:
+        type: aws_proxy
+        httpMethod: POST
+        uri: ${post_views_count_lambda_arn}
+        credentials: ${iam_role_arn}
+        passthroughBehavior: "never"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+      responses:
+        "200":
+          description: OK
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
                     type: string
-                    description: Exception message
+                    description: Count of views
+        "500":
+          description: ERROR
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
     options:
       summary: CORS support
       description: |
         Enable CORS by returning correct headers
       tags:
-      - CORS
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: '{"statusCode": 200}'
+        passthroughBehavior: "never"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
       responses:
         200:
           description: Default response for CORS method
@@ -68,15 +123,3 @@ paths:
               schema:
                 type: "string"
           content: {}
-      x-amazon-apigateway-integration:
-        type: mock
-        requestTemplates:
-          application/json: "{\"statusCode\": 200}"
-        passthroughBehavior: "never"
-        responses:
-          default:
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods: "'*'"
-              method.response.header.Access-Control-Allow-Origin: "'*'"  

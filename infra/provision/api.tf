@@ -2,9 +2,10 @@ resource "aws_api_gateway_rest_api" "api" {
   name = local.api_name
 
   body = templatefile(local.openapi_path, {
-    domain_name                         = var.domain_name
-    get_views_count_lambda_arn          = aws_lambda_function.get_views_count.invoke_arn
-    get_views_count_lambda_iam_role_arn = aws_iam_role.api_gateway_lambda_invoke.arn
+    domain_name                 = var.domain_name
+    iam_role_arn                = aws_iam_role.api_gateway_lambda_invoke.arn
+    get_views_count_lambda_arn  = aws_lambda_function.get_views_count.invoke_arn
+    post_views_count_lambda_arn = aws_lambda_function.post_views_count.invoke_arn
   })
 
   endpoint_configuration {

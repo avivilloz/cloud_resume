@@ -8,3 +8,7 @@ temp/
 terraform.tfvars
 terraform.tfstate
 terraform.tfstate.backup
+
+# python
+__pycache__/
+.pytest_cache/
