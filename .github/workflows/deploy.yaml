@@ -15,7 +15,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y ansible
       - name: Install Python libraries
         run: |
-          which python  # Check the default python path (optional)
+          ls /opt/pipx/venvs/ansible-core/bin/
           source /opt/pipx/venvs/ansible-core/bin/activate  # Activate the virtual environment
           pip install botocore boto3
           deactivate  # Deactivate the virtual environment (optional)
