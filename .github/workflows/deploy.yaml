@@ -1,0 +1,22 @@
+name: Deploy Website
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "frontend/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Install Ansible
+        run: sudo apt-get update && sudo apt-get install -y ansible
+      - name: Configure AWS Credentials (store in secrets)
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          echo "AWS credentials configured"
+      - name: Run Ansible Playbook
+        run: ansible-playbook infra/deploy/deploy.yml

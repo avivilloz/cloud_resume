@@ -4,15 +4,21 @@
   connection: local
 
   vars:
-    temp_dir: "{{ temp_dir }}"
-    s3_files_dir: "{{ s3_files_dir }}"
-    s3_bucket_name: "{{ s3_bucket_name }}"
+    temp_dir: "temp"
+    s3_files_dir: "frontend"
+    s3_bucket_name: "avivilloz"
     s3_sync_dir: "{{ temp_dir }}/s3_sync"
     script_js_path: "{{ s3_sync_dir }}/script.js"
-    views_count_api_endpoint: "{{ views_count_api_endpoint }}"
-    cloudfront_distribution_id: "{{ cloudfront_distribution_id }}"
+    views_count_api_endpoint: "https://api.avivilloz.com/views-count"
+    cloudfront_distribution_id: "E3LB8BSW54413F"
 
   tasks:
+    - name: Create s3_sync dir
+      ansible.builtin.file:
+        state: directory
+        path: "{{ s3_sync_dir }}"
+        mode: "0755"
+
     - name: Copy s3 files to s3_sync dir
       ansible.builtin.copy:
         src: "{{ s3_files_dir }}/"
