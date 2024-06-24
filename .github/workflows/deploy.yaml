@@ -15,11 +15,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y ansible
       - name: Install Python libraries
         run: |
-          ls /opt/pipx/venvs/ansible-core/bin/
           /opt/pipx/venvs/ansible-core/bin/python -m pip install boto3 botocore
-          # source /opt/pipx/venvs/ansible-core/bin/activate  # Activate the virtual environment
-          # pip install botocore boto3
-          # deactivate  # Deactivate the virtual environment (optional)
       - name: Configure AWS Credentials (store in secrets)
         run: |
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
