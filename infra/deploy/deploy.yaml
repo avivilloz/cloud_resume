@@ -4,8 +4,9 @@
   connection: local
 
   vars:
-    temp_dir: "temp"
-    s3_files_dir: "frontend"
+    project_base_dir: "../.."
+    temp_dir: "{{ project_base_dir }}/temp"
+    s3_files_dir: "{{ project_base_dir }}/frontend"
     s3_bucket_name: "avivilloz"
     s3_sync_dir: "{{ temp_dir }}/s3_sync"
     script_js_path: "{{ s3_sync_dir }}/script.js"
