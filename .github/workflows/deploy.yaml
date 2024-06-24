@@ -19,4 +19,4 @@ jobs:
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           echo "AWS credentials configured"
       - name: Run Ansible Playbook
-        run: ansible-playbook infra/deploy/deploy.yml
+        run: ansible-playbook infra/deploy/deploy.yaml
