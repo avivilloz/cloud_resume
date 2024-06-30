@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "s3" {
-  bucket        = local.s3_bucket_name
+  bucket        = var.project_name
   force_destroy = true
 }
 

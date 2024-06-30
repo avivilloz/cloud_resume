@@ -1,6 +1,8 @@
 #!/bin/bash
 
-mkdir -p temp
+# mkdir -p temp
 
-terraform -chdir="infra/provision" init
-terraform -chdir="infra/provision" apply -auto-approve
+production_env="infra/terraform/environments/production"
+
+terraform -chdir=$production_env init
+terraform -chdir=$production_env apply -auto-approve

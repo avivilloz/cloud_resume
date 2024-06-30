@@ -3,14 +3,14 @@
 # to variables.
 
 # paths
-project_base_dir = "/home/deck/git/cloud_resume"
+project_base_dir = ""
 
 # project
-project_name = ""
-domain_name  = ""
+project_name   = ""
+domain_name    = ""
+api_stage_name = ""
 
 # aws
-aws_region     = "us-east-1"
 aws_access_key = ""
 aws_secret_key = ""
 

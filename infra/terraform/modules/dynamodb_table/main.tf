@@ -8,3 +8,4 @@ resource "aws_dynamodb_table" "views_count" {
     type = "N"
   }
 }
+

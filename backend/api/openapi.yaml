@@ -4,8 +4,6 @@ info:
   title: Cloud Resume API v1
   description: Cloud Resume API v1
   version: 1.0.0
-servers:
-  - url: ${domain_name}
 paths:
   /views-count:
     get:
