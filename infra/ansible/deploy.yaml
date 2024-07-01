@@ -11,7 +11,7 @@
     s3_sync_dir: "{{ temp_dir }}/s3_sync"
     script_js_path: "{{ s3_sync_dir }}/script.js"
     views_count_api_endpoint: "https://api.avivilloz.com/views-count"
-    cloudfront_distribution_id: "E3LB8BSW54413F"
+    cloudfront_distribution_id: "E1MKDOAGSEC532"
 
   tasks:
     - name: Create s3_sync dir

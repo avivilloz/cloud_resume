@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# mkdir -p temp
+terraform_production_env_path="infra/terraform/environments/production"
+ansible_deploy_path="infra/ansible/deploy.yaml"
 
-production_env="infra/terraform/environments/production"
+terraform -chdir=$terraform_production_env_path init
+terraform -chdir=$terraform_production_env_path apply -auto-approve
 
-terraform -chdir=$production_env init
-terraform -chdir=$production_env apply -auto-approve
+ansible-playbook $ansible_deploy_path
