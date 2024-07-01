@@ -6,8 +6,8 @@
 project_base_dir = ""
 
 # project
-project_name   = ""
-api_stage_name = ""
+project_name   = "cloudres_integration"
+api_stage_name = "integration"
 
 # aws
 aws_access_key = ""

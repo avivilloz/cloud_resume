@@ -1,0 +1,24 @@
+---
+- name: Play for downloading terraform tfstate files from s3 bucket
+  hosts: localhost
+  connection: local
+
+  vars:
+    project_base_dir: "../.."
+    terraform_environments_dir: "{{ project_base_dir }}/infra/terraform/environments"
+    s3_bucket_name: "cloudres_tfstates"
+
+  tasks:
+    - name: Download terraform tfstate files
+      amazon.aws.s3_object:
+        bucket: "{{ s3_bucket_name }}"
+        object: "{{ item.object }}"
+        dest: "{{ item.dest }}"
+        mode: get
+      with_items:
+        - object: "production.tfstate"
+          dest: "{{ terraform_environments_dir }}/production/terraform.tfstate"
+        - object: "integration.tfstate"
+          dest: "{{ terraform_environments_dir }}/integration/terraform.tfstate"
+        - object: "backend.tfstate"
+          dest: "{{ terraform_environments_dir }}/backend/terraform.tfstate"
