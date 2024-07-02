@@ -4,7 +4,10 @@
   connection: local
 
   vars:
+    # outside vars
     project_base_dir: "../.."
+
+    # local vars
     terraform_environments_dir: "{{ project_base_dir }}/infra/terraform/environments"
     s3_bucket_name: "cloudres_tfstates"
 

@@ -6,7 +6,7 @@
 project_base_dir = ""
 
 # project
-project_name   = "cloudres"
+project_name   = "avivilloz"
 api_stage_name = "production"
 domain_name    = ""
 

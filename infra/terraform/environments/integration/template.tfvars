@@ -6,7 +6,7 @@
 project_base_dir = ""
 
 # project
-project_name   = "cloudres_integration"
+project_name   = "avivilloz_integration"
 api_stage_name = "integration"
 
 # aws
