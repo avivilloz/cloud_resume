@@ -1,6 +1,6 @@
 resource "aws_cloudfront_distribution" "cloudfront" {
   enabled = true
-  aliases = [var.custom_domain_name]
+  aliases = var.custom_domain_name == "" ? [] : [var.custom_domain_name]
 
   origin {
     domain_name = var.s3_website_endpoint
@@ -41,13 +41,14 @@ resource "aws_cloudfront_distribution" "cloudfront" {
 # DNS RECORD
 
 data "cloudflare_zone" "cloudfront" {
-  name = var.custom_domain_name
+  count = var.custom_domain_name != "" ? 1 : 0
+  name  = var.custom_domain_name
 }
 
 resource "cloudflare_record" "cloudfront" {
   count           = var.custom_domain_name != "" ? 1 : 0
   allow_overwrite = true
-  zone_id         = data.cloudflare_zone.cloudfront.zone_id
+  zone_id         = data.cloudflare_zone.cloudfront[count.index].zone_id
   name            = var.custom_domain_name
   value           = aws_cloudfront_distribution.cloudfront.domain_name
   type            = "CNAME"

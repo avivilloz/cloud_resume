@@ -1,0 +1,95 @@
+name: CI with Terraform, Ansible and Tests
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'frontend/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      TF_ENVS_DIR: infra/terraform/environments
+
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Install Ansible
+        run: sudo apt-get update && sudo apt-get install -y ansible
+
+      - name: Install Python libraries
+        run: |
+          /opt/pipx/venvs/ansible-core/bin/python -m pip install boto3 botocore
+
+      - name: Configure AWS Credentials (store in secrets)
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Export Cloudflare API Token (store in secrets)
+        run: |
+          export CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      - name: Check env variables
+        run: |
+          env
+
+      - name: Download Terraform tf files (s3 bucket)
+        run: |
+          ansible-playbook infra/ansible/tffiles_download.yaml --extra-vars "project_base_dir=${{ github.workspace }}"
+
+      - name: Apply Terraform - Integration Environment
+        run: |
+          terraform -chdir=${{ env.INTEGRATION_ENV_DIR }} init
+          terraform -chdir=${{ env.INTEGRATION_ENV_DIR }} apply -auto-approve -var="project_base_dir=${{ github.workspace }}"
+        env:
+          INTEGRATION_ENV_DIR: "${{ env.TF_ENVS_DIR }}/integration"
+
+      # - name: Extract Terraform Outputs
+      #   run: |
+      #     export S3_BUCKET_NAME=$(terraform output -state=tfstate s3_bucket_name)
+      #     export CLOUDFRONT_ID=$(terraform output -state=tfstate cloudfront_id)
+      #     export API_STAGE_ENDPOINT=$(terraform output -state=tfstate api_stage_endpoint)
+
+      # - name: Deploy S3 Buckets with Ansible (Integration)
+      #   run: |
+      #     ansible-playbook deploy_s3_files.yml \
+      #       -e "aws_region=your_region" \
+      #       -e "s3_bucket_name=$S3_BUCKET_NAME" \
+      #       -e "cloudfront_id=$CLOUDFRONT_ID" \
+      #       -e "api_stage_endpoint=$API_STAGE_ENDPOINT"
+
+      # - name: Run Frontend Tests
+      #   run: |
+      #     cd frontend
+      #     # Replace with your frontend test command (e.g., npm test)
+
+      # - name: Run Backend Tests
+      #   run: |
+      #     cd backend
+      #     # Replace with your backend test command (e.g., python -m unittest)
+
+      # - name: Destroy Terraform - Integration Environment
+      #   run: |
+      #     cd integration-environment
+      #     terraform destroy
+
+      # - name: Apply Terraform - Production Environment (if tests passed)
+      #   if: ${{ success() }}  # Only run if previous steps succeed
+      #   run: |
+      #     cd production-environment
+      #     terraform init
+      #     terraform apply
+
+      # - name: Deploy S3 Buckets with Ansible (Production) (if tests passed)
+      #   if: ${{ success() }}  # Only run if previous steps succeed
+      #   run: |
+      #     ansible-playbook deploy_s3_files.yml \
+      #       -e "aws_region=your_region" \
+      #       -e "s3_bucket_name=$S3_BUCKET_NAME" \
+      #       -e "cloudfront_id=$CLOUDFRONT_ID" \
+      #       -e "api_stage_endpoint=$API_STAGE_ENDPOINT"
+
+  # Upload your ansible playbooks to an artifact before running the workflow
+

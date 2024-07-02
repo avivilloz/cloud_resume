@@ -1,5 +1,6 @@
 module "lambda_invoke" {
-  source = "../iam_roles/lambda_invoke"
+  source       = "../iam_roles/lambda_invoke"
+  project_name = var.project_name
 }
 
 resource "aws_api_gateway_rest_api" "api_gateway" {
@@ -52,12 +53,13 @@ resource "aws_api_gateway_base_path_mapping" "api_gateway" {
 # DNS RECORD
 
 data "cloudflare_zone" "api_gateway" {
-  name = var.custom_domain_name
+  count = var.custom_domain_name != "" ? 1 : 0
+  name  = var.custom_domain_name
 }
 
 resource "cloudflare_record" "api_gateway" {
   count           = var.custom_domain_name != "" ? 1 : 0
-  zone_id         = data.cloudflare_zone.api_gateway.zone_id
+  zone_id         = data.cloudflare_zone.api_gateway[count.index].zone_id
   name            = local.api_domain_name
   value           = aws_api_gateway_domain_name.api_gateway[count.index].cloudfront_domain_name
   type            = "CNAME"

@@ -1,0 +1,35 @@
+---
+- name: Play for downloading terraform tf files from s3 bucket
+  hosts: localhost
+  connection: local
+
+  vars:
+    # outside vars
+    project_base_dir: "{{ project_base_dir }}"
+
+    # local vars
+    tf_envs_dir: "{{ project_base_dir }}/infra/terraform/environments"
+    s3_bucket_name: "avivilloz-tffiles"
+
+  tasks:
+    - name: Download terraform tf files
+      amazon.aws.s3_object:
+        bucket: "{{ s3_bucket_name }}"
+        object: "{{ item.object }}"
+        dest: "{{ item.dest }}"
+        mode: get
+      with_items:
+        - object: "production.tfstate"
+          dest: "{{ tf_envs_dir }}/production/terraform.tfstate"
+        - object: "production.tfvars"
+          dest: "{{ tf_envs_dir }}/production/terraform.tfvars"
+
+        - object: "integration.tfstate"
+          dest: "{{ tf_envs_dir }}/integration/terraform.tfstate"
+        - object: "integration.tfvars"
+          dest: "{{ tf_envs_dir }}/integration/terraform.tfvars"
+
+        - object: "backend.tfstate"
+          dest: "{{ tf_envs_dir }}/backend/terraform.tfstate"
+        - object: "backend.tfvars"
+          dest: "{{ tf_envs_dir }}/backend/terraform.tfvars"

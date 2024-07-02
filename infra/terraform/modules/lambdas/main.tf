@@ -6,7 +6,8 @@ data "archive_file" "lambda_zip_files" {
 }
 
 module "dynamodb_full_access" {
-  source = "../iam_roles/dynamodb_full_access"
+  source       = "../iam_roles/dynamodb_full_access"
+  project_name = var.project_name
 }
 
 resource "aws_lambda_function" "lambdas" {
