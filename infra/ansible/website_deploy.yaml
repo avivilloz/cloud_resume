@@ -5,10 +5,10 @@
 
   vars:
     # outside vars
-    project_base_dir: "../.."
-    s3_bucket_name: "cloudres"
+    project_base_dir: "/home/deck/git/cloud_resume"
+    s3_bucket_name: "avivilloz"
     views_count_api_endpoint: "https://api.avivilloz.com/views-count"
-    cloudfront_distribution_id: "E1MKDOAGSEC532"
+    cloudfront_distribution_id: "E194HJWFEFSTAM"
 
     # local vars
     website_files_dir: "{{ project_base_dir }}/frontend"
