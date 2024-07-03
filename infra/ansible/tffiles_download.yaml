@@ -24,12 +24,7 @@
         - object: "production.tfvars"
           dest: "{{ tf_envs_dir }}/production/terraform.tfvars"
 
-        - object: "integration.tfstate"
-          dest: "{{ tf_envs_dir }}/integration/terraform.tfstate"
-        - object: "integration.tfvars"
-          dest: "{{ tf_envs_dir }}/integration/terraform.tfvars"
-
-        - object: "backend.tfstate"
-          dest: "{{ tf_envs_dir }}/backend/terraform.tfstate"
-        - object: "backend.tfvars"
-          dest: "{{ tf_envs_dir }}/backend/terraform.tfvars"
+        - object: "development.tfstate"
+          dest: "{{ tf_envs_dir }}/development/terraform.tfstate"
+        - object: "development.tfvars"
+          dest: "{{ tf_envs_dir }}/development/terraform.tfvars"
