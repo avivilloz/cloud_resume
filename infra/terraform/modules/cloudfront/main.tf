@@ -8,7 +8,7 @@ resource "aws_cloudfront_distribution" "cloudfront" {
 
     custom_origin_config {
       origin_protocol_policy = "http-only"
-      origin_ssl_protocols   = ["TLSv1.2"]
+      origin_ssl_protocols   = ["TLSv1"]
       http_port              = 80
       https_port             = 443
     }
@@ -25,7 +25,7 @@ resource "aws_cloudfront_distribution" "cloudfront" {
     acm_certificate_arn            = var.acm_certificate_arn
     cloudfront_default_certificate = var.acm_certificate_arn == "" ? true : false
     ssl_support_method             = "sni-only"
-    minimum_protocol_version       = "TLSv1.2_2021"
+    minimum_protocol_version       = "TLSv1"
   }
 
   default_cache_behavior {
