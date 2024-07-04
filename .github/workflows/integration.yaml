@@ -52,16 +52,16 @@ jobs:
               used in website frontend files deployment
         if: ${{ success() }}
         run: |
-          echo "S3_BUCKET_NAME=$(terraform output 
-            -state=${{ env.TF_DEV_ENV_DIR }}/terraform.tfstate 
+          echo "S3_BUCKET_NAME=$(terraform output \
+            -state=${{ env.TF_DEV_ENV_DIR }}/terraform.tfstate \
             -raw s3_bucket_name)" >> ${{ github.env }}
 
-          echo "API_STAGE_ENDPOINT=$(terraform output 
-            -state=${{ env.TF_DEV_ENV_DIR }}/terraform.tfstate 
+          echo "API_STAGE_ENDPOINT=$(terraform output \
+            -state=${{ env.TF_DEV_ENV_DIR }}/terraform.tfstate \
             -raw api_stage_endpoint)" >> ${{ github.env }}
 
-          echo "CLOUDFRONT_DISTRIBUTION_ID=$(terraform output 
-            -state=${{ env.TF_DEV_ENV_DIR }}/terraform.tfstate 
+          echo "CLOUDFRONT_DISTRIBUTION_ID=$(terraform output \
+            -state=${{ env.TF_DEV_ENV_DIR }}/terraform.tfstate \
             -raw cloudfront_distribution_id)" >> ${{ github.env }}
 
       - name: Deploy website frontend files to env using ansible
