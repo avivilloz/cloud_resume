@@ -2,7 +2,7 @@
 
 project_base_dir="/home/deck/git/cloud_resume"
 
-terraform_env="production"
+terraform_env="development"
 terraform_envs_dir="$project_base_dir/infra/terraform/environments"
 terraform_env_path="$terraform_envs_dir/$terraform_env"
 
