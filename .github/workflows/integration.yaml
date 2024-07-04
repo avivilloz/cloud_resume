@@ -7,22 +7,7 @@ on:
       - 'frontend/**'
 
 jobs:
-  dependencies_setup:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@master
-
-      - name: Install ansible
-        run: |
-          sudo apt-get update && sudo apt-get install -y ansible
-
-      - name: Install python libraries
-        run: |
-          /opt/pipx/venvs/ansible-core/bin/python -m pip install pytest boto3 botocore
-
   development_env_setup:
-    needs: dependencies_setup
     runs-on: ubuntu-latest
 
     env:
@@ -35,6 +20,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@master
+
+      - name: Install ansible
+        run: |
+          sudo apt-get update && sudo apt-get install -y ansible
+
+      - name: Install python libraries
+        run: |
+          /opt/pipx/venvs/ansible-core/bin/python -m pip install pytest boto3 botocore
 
       - name: Download terraform tf files from s3 bucket using ansible
         if: ${{ success() }}
@@ -80,16 +73,20 @@ jobs:
             -e "api_stage_endpoint=$API_STAGE_ENDPOINT"
             -e "cloudfront_distribution_id=$CLOUDFRONT_DISTRIBUTION_ID"
   
-  # backend_tests:
-  #   needs: [dependencies_setup, development_env_setup]
-  #   runs-on: ubuntu-latest
+  backend_tests:
+    needs: development_env_setup
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - uses: actions/checkout@master
+    steps:
+      - uses: actions/checkout@master
 
-  #     - name: Run backend tests with pytest
-  #       run: |
-  #         pytest
+      - name: Install python libraries
+        run: |
+          /opt/pipx/venvs/ansible-core/bin/python -m pip install pytest
+
+      - name: Run backend tests with pytest
+        run: |
+          cat infra/terraform/environments/development/terraform.tfstate
           
 
 
