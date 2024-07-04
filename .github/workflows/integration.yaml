@@ -68,9 +68,9 @@ jobs:
         if: ${{ success() }}
         run: |
           ansible-playbook ${{ env.ANSIBLE_SCRIPTS_DIR }}/website_deploy.yaml \
-            -e "project_base_dir=${{ github.workspace }}"
-            -e "s3_bucket_name=$S3_BUCKET_NAME"
-            -e "api_stage_endpoint=$API_STAGE_ENDPOINT"
+            -e "project_base_dir=${{ github.workspace }}" \
+            -e "s3_bucket_name=$S3_BUCKET_NAME" \
+            -e "api_stage_endpoint=$API_STAGE_ENDPOINT" \
             -e "cloudfront_distribution_id=$CLOUDFRONT_DISTRIBUTION_ID"
   
   backend_tests:
