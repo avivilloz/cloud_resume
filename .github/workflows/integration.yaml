@@ -7,7 +7,22 @@ on:
       - 'frontend/**'
 
 jobs:
+  dependencies_setup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Install ansible
+        run: |
+          sudo apt-get update && sudo apt-get install -y ansible
+
+      - name: Install python libraries
+        run: |
+          /opt/pipx/venvs/ansible-core/bin/python -m pip install pytest boto3 botocore
+
   development_env_setup:
+    needs: dependencies_setup
     runs-on: ubuntu-latest
 
     env:
@@ -21,19 +36,11 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
-      - name: Install ansible
-        run: |
-          sudo apt-get update && sudo apt-get install -y ansible
-
-      - name: Install python libraries
-        run: |
-          /opt/pipx/venvs/ansible-core/bin/python -m pip install boto3 botocore
-
       - name: Download terraform tf files from s3 bucket using ansible
         if: ${{ success() }}
         run: |
           ansible-playbook ${{ env.ANSIBLE_SCRIPTS_DIR }}/tffiles_download.yaml \
-            --extra-vars "project_base_dir=${{ github.workspace }}"
+            -e "project_base_dir=${{ github.workspace }}"
 
       - name: Setup development environment using terraform 
         if: ${{ success() }}
@@ -46,7 +53,7 @@ jobs:
         if: ${{ success() }}
         run: |
           ansible-playbook ${{ env.ANSIBLE_SCRIPTS_DIR }}/tffiles_upload.yaml \
-            --extra-vars "project_base_dir=${{ github.workspace }}"
+            -e "project_base_dir=${{ github.workspace }}"
 
       - name: Extract values from terraform tfstate file to be 
               used in website frontend files deployment
@@ -68,10 +75,23 @@ jobs:
         if: ${{ success() }}
         run: |
           ansible-playbook ${{ env.ANSIBLE_SCRIPTS_DIR }}/website_deploy.yaml \
-            --extra-vars "project_base_dir=${{ github.workspace }} 
-            s3_bucket_name=$S3_BUCKET_NAME 
-            api_stage_endpoint=$API_STAGE_ENDPOINT 
-            cloudfront_distribution_id=$CLOUDFRONT_DISTRIBUTION_ID"
+            -e "project_base_dir=${{ github.workspace }}"
+            -e "s3_bucket_name=$S3_BUCKET_NAME"
+            -e "api_stage_endpoint=$API_STAGE_ENDPOINT"
+            -e "cloudfront_distribution_id=$CLOUDFRONT_DISTRIBUTION_ID"
+  
+  # backend_tests:
+  #   needs: [dependencies_setup, development_env_setup]
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - uses: actions/checkout@master
+
+  #     - name: Run backend tests with pytest
+  #       run: |
+  #         pytest
+          
+
 
 
       # - name: Extract Terraform Outputs
