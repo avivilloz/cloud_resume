@@ -32,30 +32,46 @@ jobs:
       - name: Download terraform tf files from s3 bucket using ansible
         if: ${{ success() }}
         run: |
-          ansible-playbook ${{ env.ANSIBLE_SCRIPTS_DIR }}/tffiles_download.yaml --extra-vars "project_base_dir=${{ github.workspace }}"
+          ansible-playbook ${{ env.ANSIBLE_SCRIPTS_DIR }}/tffiles_download.yaml \
+            --extra-vars "project_base_dir=${{ github.workspace }}"
 
-      - name: Setup development environment using ansible and terraform 
+      - name: Setup development environment using terraform 
         if: ${{ success() }}
         run: |
           terraform -chdir=${{ env.TF_DEV_ENV_DIR }} init
-          terraform -chdir=${{ env.TF_DEV_ENV_DIR }} apply -auto-approve -var="project_base_dir=${{ github.workspace }}"
+          terraform -chdir=${{ env.TF_DEV_ENV_DIR }} apply -auto-approve \
+            -var="project_base_dir=${{ github.workspace }}"
 
       - name: Upload terraform tf files to s3 bucket using ansible
         if: ${{ success() }}
         run: |
-          ansible-playbook ${{ env.ANSIBLE_SCRIPTS_DIR }}/tffiles_upload.yaml --extra-vars "project_base_dir=${{ github.workspace }}"
+          ansible-playbook ${{ env.ANSIBLE_SCRIPTS_DIR }}/tffiles_upload.yaml \
+            --extra-vars "project_base_dir=${{ github.workspace }}"
 
-      - name: Extracting values from terraform state to be used in website frontend files deployment
+      - name: Extract values from terraform tfstate file to be 
+              used in website frontend files deployment
         if: ${{ success() }}
         run: |
-          echo "S3_BUCKET_NAME=$(terraform output -state=${{ env.TF_DEV_ENV_DIR }}/terraform.tfstate -raw s3_bucket_name)" >> ${{ github.env }}
-          echo "API_STAGE_ENDPOINT=$(terraform output -state=${{ env.TF_DEV_ENV_DIR }}/terraform.tfstate -raw api_stage_endpoint)" >> ${{ github.env }}
-          echo "CLOUDFRONT_DISTRIBUTION_ID="$(terraform output -state=${{ env.TF_DEV_ENV_DIR }}/terraform.tfstate -raw cloudfront_distribution_id)" >> ${{ github.env }}
+          echo "S3_BUCKET_NAME=$(terraform output 
+            -state=${{ env.TF_DEV_ENV_DIR }}/terraform.tfstate 
+            -raw s3_bucket_name)" >> ${{ github.env }}
+
+          echo "API_STAGE_ENDPOINT=$(terraform output 
+            -state=${{ env.TF_DEV_ENV_DIR }}/terraform.tfstate 
+            -raw api_stage_endpoint)" >> ${{ github.env }}
+
+          echo "CLOUDFRONT_DISTRIBUTION_ID=$(terraform output 
+            -state=${{ env.TF_DEV_ENV_DIR }}/terraform.tfstate 
+            -raw cloudfront_distribution_id)" >> ${{ github.env }}
 
       - name: Deploy website frontend files to env using ansible
         if: ${{ success() }}
         run: |
-          ansible-playbook ${{ env.ANSIBLE_SCRIPTS_DIR }}/website_deploy.yaml --extra-vars "project_base_dir=${{ github.workspace }} s3_bucket_name=$S3_BUCKET_NAME api_stage_endpoint=$API_STAGE_ENDPOINT cloudfront_distribution_id=$CLOUDFRONT_DISTRIBUTION_ID"
+          ansible-playbook ${{ env.ANSIBLE_SCRIPTS_DIR }}/website_deploy.yaml \
+            --extra-vars "project_base_dir=${{ github.workspace }} 
+            s3_bucket_name=$S3_BUCKET_NAME 
+            api_stage_endpoint=$API_STAGE_ENDPOINT 
+            cloudfront_distribution_id=$CLOUDFRONT_DISTRIBUTION_ID"
 
 
       # - name: Extract Terraform Outputs
