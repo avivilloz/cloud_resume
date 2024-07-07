@@ -1,15 +1,28 @@
-name: CI with Terraform, Ansible and Tests
-
+name: Test
 on:
   push:
     branches: [master]
     paths:
       - 'frontend/**'
-
+      - 'backend/**'
 jobs:
+  path-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.path-changes.outputs.frontend }}
+      backend: ${{ steps.path-changes.outputs.backend }}
+    steps:
+    - uses: actions/checkout@master
+    - uses: dorny/paths-filter@v2
+      id: path-changes
+      with:
+        filters: |
+          frontend:
+            - 'frontend/**'
+          backend:
+            - 'backend/**'  
   development-env-setup:
     runs-on: ubuntu-latest
-
     env:
       AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -17,37 +30,30 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       TF_DEV_ENV_DIR: "infra/terraform/environments/development"
       ANSIBLE_SCRIPTS_DIR: infra/ansible
-
     steps:
       - uses: actions/checkout@master
-
       - name: Install ansible
         run: |
           sudo apt-get update && sudo apt-get install -y ansible
-
       - name: Install python libraries
         run: |
           /opt/pipx/venvs/ansible-core/bin/python -m pip install pytest boto3 botocore
-
       - name: Download terraform tf files from s3 bucket using ansible
         if: ${{ success() }}
         run: |
           ansible-playbook ${{ env.ANSIBLE_SCRIPTS_DIR }}/tffiles_download.yaml \
             -e "project_base_dir=${{ github.workspace }}"
-
       - name: Setup development environment using terraform 
         if: ${{ success() }}
         run: |
           terraform -chdir=${{ env.TF_DEV_ENV_DIR }} init
           terraform -chdir=${{ env.TF_DEV_ENV_DIR }} apply -auto-approve \
             -var="project_base_dir=${{ github.workspace }}"
-
       - name: Upload terraform tf files to s3 bucket using ansible
         if: ${{ success() }}
         run: |
           ansible-playbook ${{ env.ANSIBLE_SCRIPTS_DIR }}/tffiles_upload.yaml \
             -e "project_base_dir=${{ github.workspace }}"
-
       - name: Extract values from terraform tfstate file to be 
               used in website frontend files deployment
         if: ${{ success() }}
@@ -63,7 +69,6 @@ jobs:
           echo "CLOUDFRONT_DISTRIBUTION_ID=$(terraform output \
             -state=${{ env.TF_DEV_ENV_DIR }}/terraform.tfstate \
             -raw cloudfront_distribution_id)" >> ${{ github.env }}
-
       - name: Deploy website frontend files to env using ansible
         if: ${{ success() }}
         run: |
@@ -72,34 +77,54 @@ jobs:
             -e "s3_bucket_name=$S3_BUCKET_NAME" \
             -e "api_stage_endpoint=$API_STAGE_ENDPOINT" \
             -e "cloudfront_distribution_id=$CLOUDFRONT_DISTRIBUTION_ID"
-
       - name: Set outputs
         id: set-outputs
         if: ${{ success() }}
         run: |
           echo "API_ENDPOINT=$API_STAGE_ENDPOINT" >> $GITHUB_OUTPUT
-
     outputs:
       API_ENDPOINT: ${{ steps.set-outputs.outputs.API_ENDPOINT }}
-
-  
   backend-tests:
-    needs: [development-env-setup]
+    needs: [development-env-setup, path-changes]
+    if: ${{ needs.path-changes.outputs.backend }}
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@master
-
       - name: Install python libraries
         run: |
           pip install pytest
-        # /opt/pipx/venvs/ansible-core/bin/python -m pip install pytest
-
       - name: Run backend tests with pytest
         run: |
           pytest -s tests/backend --api-endpoint ${{ env.API_ENDPOINT }}
         env:
           API_ENDPOINT: ${{ needs.development-env-setup.outputs.API_ENDPOINT }}
+  frontend-tests:
+    needs: [development-env-setup, path-changes]
+    if: ${{ needs.path-changes.outputs.frontend }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Run frontend tests
+        run: |
+          echo "Running frontend tests"
+  error-tests:
+    needs: [frontend-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Run error tests
+        run: |
+          echo "Running error tests"
+          exit 1
+  skip-tests:
+    needs: [error-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Run skip tests
+        run: |
+          echo "Running skip tests"
+  
 
 
 
