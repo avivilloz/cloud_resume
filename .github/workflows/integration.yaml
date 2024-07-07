@@ -7,7 +7,7 @@ on:
       - 'frontend/**'
 
 jobs:
-  development_env_setup:
+  development-env-setup:
     runs-on: ubuntu-latest
 
     env:
@@ -50,6 +50,7 @@ jobs:
 
       - name: Extract values from terraform tfstate file to be 
               used in website frontend files deployment
+        id: extract-values
         if: ${{ success() }}
         run: |
           echo "S3_BUCKET_NAME=$(terraform output \
@@ -73,8 +74,8 @@ jobs:
             -e "api_stage_endpoint=$API_STAGE_ENDPOINT" \
             -e "cloudfront_distribution_id=$CLOUDFRONT_DISTRIBUTION_ID"
   
-  backend_tests:
-    needs: development_env_setup
+  backend-tests:
+    needs: development-env-setup
     runs-on: ubuntu-latest
 
     steps:
@@ -86,8 +87,10 @@ jobs:
 
       - name: Run backend tests with pytest
         run: |
-          cat infra/terraform/environments/development/terraform.tfstate
-          
+          echo "$API_STAGE_ENDPOINT"
+        env:
+          API_STAGE_ENDPOINT: ${{ needs.development-env-setup.outputs.API_STAGE_ENDPOINT }}
+
 
 
 
