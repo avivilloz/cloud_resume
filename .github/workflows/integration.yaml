@@ -92,7 +92,8 @@ jobs:
 
       - name: Install python libraries
         run: |
-          /opt/pipx/venvs/ansible-core/bin/python -m pip install pytest
+          pip install pytest
+        # /opt/pipx/venvs/ansible-core/bin/python -m pip install pytest
 
       - name: Run backend tests with pytest
         run: |
