@@ -81,7 +81,7 @@ jobs:
       #     echo "API_ENDPOINT=$API_STAGE_ENDPOINT" >> $GITHUB_OUTPUT
 
     outputs:
-      API_ENDPOINT: "$API_STAGE_ENDPOINT"
+      API_ENDPOINT: ${{ env.API_STAGE_ENDPOINT }}
 
   
   backend-tests:
