@@ -50,7 +50,6 @@ jobs:
 
       - name: Extract values from terraform tfstate file to be 
               used in website frontend files deployment
-        id: extract-values
         if: ${{ success() }}
         run: |
           echo "S3_BUCKET_NAME=$(terraform output \
@@ -74,14 +73,14 @@ jobs:
             -e "api_stage_endpoint=$API_STAGE_ENDPOINT" \
             -e "cloudfront_distribution_id=$CLOUDFRONT_DISTRIBUTION_ID"
 
-      # - name: Set outputs
-      #   id: set-outputs
-      #   if: ${{ success() }}
-      #   run: |
-      #     echo "API_ENDPOINT=$API_STAGE_ENDPOINT" >> $GITHUB_OUTPUT
+      - name: Set outputs
+        id: set-outputs
+        if: ${{ success() }}
+        run: |
+          echo "API_ENDPOINT=$API_STAGE_ENDPOINT" >> $GITHUB_OUTPUT
 
     outputs:
-      API_ENDPOINT: ${{ env.API_STAGE_ENDPOINT }}
+      API_ENDPOINT: ${{ steps.set-outputs.outputs.API_ENDPOINT }}
 
   
   backend-tests:
