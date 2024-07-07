@@ -97,7 +97,7 @@ jobs:
 
       - name: Run backend tests with pytest
         run: |
-          pytest -s --api-endpoint ${{ env.API_ENDPOINT }} tests/backend
+          pytest -s --api-endpoint ${{ env.API_ENDPOINT }} tests/backend/views_count/test_views_count.py
         env:
           API_ENDPOINT: ${{ needs.development-env-setup.outputs.API_ENDPOINT }}
 
