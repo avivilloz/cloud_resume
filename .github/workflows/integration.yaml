@@ -89,7 +89,7 @@ jobs:
         run: |
           echo "$API_STAGE_ENDPOINT"
         env:
-          API_STAGE_ENDPOINT: ${{ needs.development-env-setup.outputs.API_STAGE_ENDPOINT }}
+          API_STAGE_ENDPOINT: ${{ needs.development-env-setup.outputs.api-stage-endpoint }}
 
 
 
