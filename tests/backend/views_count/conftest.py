@@ -7,4 +7,5 @@ def pytest_addoption(parser):
 
 @pytest.fixture(scope="session")
 def views_count_api_endpoint(pytestconfig) -> str:
-    return f"{pytestconfig.getoption("api_endpoint")}/views-count"
+    api_endpoint = pytestconfig.getoption("api_endpoint")
+    return f"{api_endpoint}/views-count"
