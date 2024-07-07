@@ -73,6 +73,12 @@ jobs:
             -e "s3_bucket_name=$S3_BUCKET_NAME" \
             -e "api_stage_endpoint=$API_STAGE_ENDPOINT" \
             -e "cloudfront_distribution_id=$CLOUDFRONT_DISTRIBUTION_ID"
+
+      - name: Set outputs
+        if: ${{ success() }}
+        run: |
+          echo "API_ENDPOINT=$API_STAGE_ENDPOINT" >> $GITHUB_OUTPUT
+
   
   backend-tests:
     needs: development-env-setup
@@ -87,9 +93,9 @@ jobs:
 
       - name: Run backend tests with pytest
         run: |
-          echo "$API_STAGE_ENDPOINT"
+          echo "$API_ENDPOINT"
         env:
-          API_STAGE_ENDPOINT: ${{ needs.development-env-setup.outputs.api-stage-endpoint }}
+          API_ENDPOINT: ${{ needs.development-env-setup.outputs.API_ENDPOINT }}
 
 
 
