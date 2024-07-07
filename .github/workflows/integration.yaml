@@ -77,7 +77,8 @@ jobs:
         id: set-outputs
         if: ${{ success() }}
         run: |
-          echo "API_ENDPOINT=$API_STAGE_ENDPOINT" >> $GITHUB_OUTPUT
+          echo ${{ env.API_STAGE_ENDPOINT }}
+          echo "API_ENDPOINT=${{ env.API_STAGE_ENDPOINT }}" >> $GITHUB_OUTPUT
 
     outputs:
       API_ENDPOINT: ${{ steps.set-outputs.outputs.API_ENDPOINT }}
