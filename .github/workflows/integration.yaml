@@ -13,7 +13,7 @@ jobs:
       backend: ${{ steps.path-changes.outputs.backend }}
     steps:
     - uses: actions/checkout@master
-    - uses: dorny/paths-filter@v2
+    - uses: dorny/paths-filter@master
       id: path-changes
       with:
         filters: |
@@ -86,7 +86,7 @@ jobs:
       API_ENDPOINT: ${{ steps.set-outputs.outputs.API_ENDPOINT }}
   backend-tests:
     needs: [development-env-setup, path-changes]
-    if: ${{ needs.path-changes.outputs.backend }}
+    if: ${{ needs.path-changes.outputs.backend == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
@@ -100,7 +100,7 @@ jobs:
           API_ENDPOINT: ${{ needs.development-env-setup.outputs.API_ENDPOINT }}
   frontend-tests:
     needs: [development-env-setup, path-changes]
-    if: ${{ needs.path-changes.outputs.frontend }}
+    if: ${{ needs.path-changes.outputs.frontend == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
