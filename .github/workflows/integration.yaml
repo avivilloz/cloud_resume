@@ -74,14 +74,18 @@ jobs:
             -e "api_stage_endpoint=$API_STAGE_ENDPOINT" \
             -e "cloudfront_distribution_id=$CLOUDFRONT_DISTRIBUTION_ID"
 
-      - name: Set outputs
-        if: ${{ success() }}
-        run: |
-          echo "API_ENDPOINT=$API_STAGE_ENDPOINT" >> $GITHUB_OUTPUT
+      # - name: Set outputs
+      #   id: set-outputs
+      #   if: ${{ success() }}
+      #   run: |
+      #     echo "API_ENDPOINT=$API_STAGE_ENDPOINT" >> $GITHUB_OUTPUT
+
+    outputs:
+      API_ENDPOINT: "$API_STAGE_ENDPOINT"
 
   
   backend-tests:
-    needs: development-env-setup
+    needs: [development-env-setup]
     runs-on: ubuntu-latest
 
     steps:
