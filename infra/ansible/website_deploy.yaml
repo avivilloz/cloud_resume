@@ -7,7 +7,7 @@
     # outside vars
     project_base_dir: "{{ project_base_dir }}"
     s3_bucket_name: "{{ s3_bucket_name }}"
-    views_count_api_endpoint: "{{ api_stage_endpoint }}/views-count"
+    views_count_api_url: "{{ api_url }}/views-count"
     cloudfront_distribution_id: "{{ cloudfront_distribution_id }}"
 
     # local vars
@@ -33,8 +33,8 @@
     - name: Inject views-count API endpoint into script.js file
       ansible.builtin.replace:
         path: "{{ script_js_path }}"
-        regexp: "__VIEWS_COUNT_API_ENDPOINT__"
-        replace: "{{ views_count_api_endpoint }}"
+        regexp: "__VIEWS_COUNT_api_url__"
+        replace: "{{ views_count_api_url }}"
 
     - name: Synchronize directory contents to S3 bucket
       community.aws.s3_sync:

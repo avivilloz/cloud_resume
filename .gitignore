@@ -13,3 +13,4 @@ terraform.tfstate.backup
 # python
 __pycache__/
 .pytest_cache/
+latest_logs/
