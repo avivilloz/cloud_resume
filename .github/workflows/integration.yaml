@@ -128,7 +128,7 @@ jobs:
           python -m venv ${{ env.VENV_NAME }}
           . ${{ env.VENV_NAME }}/bin/activate
           pip install -r ${{ env.BACKEND_TESTS_DIR }}/requirements.txt
-          pytest -s ${{ env.BACKEND_TESTS_DIR }} --api-endpoint="${{ env.API_URL }}"
+          pytest -s ${{ env.BACKEND_TESTS_DIR }} --api-url="${{ env.API_URL }}"
 
 
   frontend-tests:
