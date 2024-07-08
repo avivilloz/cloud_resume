@@ -1,16 +1,18 @@
 name: Test and deploy website
+
+
 on:
   push:
     branches: [master]
     paths:
       - 'frontend/**'
       - 'backend/**'
+
+
 jobs:
   path-changes:
     runs-on: ubuntu-latest
-    outputs:
-      frontend: ${{ steps.path-changes.outputs.frontend }}
-      backend: ${{ steps.path-changes.outputs.backend }}
+
     steps:
     - uses: actions/checkout@master
     - uses: dorny/paths-filter@master
@@ -21,8 +23,15 @@ jobs:
             - 'frontend/**'
           backend:
             - 'backend/**'  
+
+    outputs:
+      frontend: ${{ steps.path-changes.outputs.frontend }}
+      backend: ${{ steps.path-changes.outputs.backend }}
+
+
   development-env-setup:
     runs-on: ubuntu-latest
+
     env:
       AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -30,30 +39,37 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       TF_DEV_ENV_DIR: "infra/terraform/environments/development"
       ANSIBLE_SCRIPTS_DIR: infra/ansible
+
     steps:
       - uses: actions/checkout@master
+
       - name: Install ansible
         run: |
           sudo apt-get update && sudo apt-get install -y ansible
+
       - name: Install python libraries
         run: |
           /opt/pipx/venvs/ansible-core/bin/python -m pip install pytest boto3 botocore
+
       - name: Download terraform tf files from s3 bucket using ansible
         if: ${{ success() }}
         run: |
           ansible-playbook ${{ env.ANSIBLE_SCRIPTS_DIR }}/tffiles_download.yaml \
             -e "project_base_dir=${{ github.workspace }}"
+
       - name: Setup development environment using terraform 
         if: ${{ success() }}
         run: |
           terraform -chdir=${{ env.TF_DEV_ENV_DIR }} init
           terraform -chdir=${{ env.TF_DEV_ENV_DIR }} apply -auto-approve \
             -var="project_base_dir=${{ github.workspace }}"
+
       - name: Upload terraform tf files to s3 bucket using ansible
         if: ${{ success() }}
         run: |
           ansible-playbook ${{ env.ANSIBLE_SCRIPTS_DIR }}/tffiles_upload.yaml \
             -e "project_base_dir=${{ github.workspace }}"
+
       - name: Extract values from terraform tfstate file to be 
               used in website frontend files deployment
         if: ${{ success() }}
@@ -61,15 +77,19 @@ jobs:
           echo "S3_BUCKET_NAME=$(terraform output \
             -state=${{ env.TF_DEV_ENV_DIR }}/terraform.tfstate \
             -raw s3_bucket_name)" >> ${{ github.env }}
+
           echo "API_URL=$(terraform output \
             -state=${{ env.TF_DEV_ENV_DIR }}/terraform.tfstate \
             -raw api_url)" >> ${{ github.env }}
+
           echo "CLOUDFRONT_DISTRIBUTION_ID=$(terraform output \
             -state=${{ env.TF_DEV_ENV_DIR }}/terraform.tfstate \
             -raw cloudfront_distribution_id)" >> ${{ github.env }}
+
           echo "WEBSITE_URL=$(terraform output \
             -state=${{ env.TF_DEV_ENV_DIR }}/terraform.tfstate \
             -raw website_url)" >> ${{ github.env }}
+
       - name: Deploy website frontend files to env using ansible
         if: ${{ success() }}
         run: |
@@ -78,22 +98,28 @@ jobs:
             -e "s3_bucket_name=$S3_BUCKET_NAME" \
             -e "api_url=$API_URL" \
             -e "cloudfront_distribution_id=$CLOUDFRONT_DISTRIBUTION_ID"
+
       - name: Set outputs
         id: set-outputs
         if: ${{ success() }}
         run: |
           echo "API_URL=$API_URL" >> $GITHUB_OUTPUT
           echo "WEBSITE_URL=$WEBSITE_URL" >> $GITHUB_OUTPUT
+
     outputs:
       API_URL: ${{ steps.set-outputs.outputs.API_URL }}
       WEBSITE_URL: ${{ steps.set-outputs.outputs.WEBSITE_URL }}
+
+
   backend-tests:
     needs: [development-env-setup, path-changes]
     runs-on: ubuntu-latest
+
     env:
       API_URL: ${{ needs.development-env-setup.outputs.API_URL }}
       BACKEND_TESTS_DIR: "tests/backend"
       VENV_NAME: "venv"
+
     steps:
       - uses: actions/checkout@master
       - name: Setup venv, install requirements and run backend tests
@@ -103,13 +129,17 @@ jobs:
           . ${{ env.VENV_NAME }}/bin/activate
           pip install -r ${{ env.BACKEND_TESTS_DIR }}/requirements.txt
           pytest -s ${{ env.BACKEND_TESTS_DIR }} --api-endpoint="${{ env.API_URL }}"
+
+
   frontend-tests:
     needs: [development-env-setup, path-changes]
     runs-on: ubuntu-latest
+
     env:
       WEBSITE_URL: ${{ needs.development-env-setup.outputs.WEBSITE_URL }}
       FRONTEND_TESTS_DIR: "tests/frontend"
       VENV_NAME: "venv"
+
     steps:
       - uses: actions/checkout@master
       - name: Setup venv, install requirements and run frontend tests
@@ -119,72 +149,4 @@ jobs:
           . ${{ env.VENV_NAME }}/bin/activate
           pip install -r ${{ env.FRONTEND_TESTS_DIR }}/requirements.txt
           pytest -s ${{ env.FRONTEND_TESTS_DIR }} --website-url="${{ env.WEBSITE_URL }}"
-  error-tests:
-    needs: [frontend-tests, backend-tests]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-      - name: Run error tests
-        run: |
-          echo "Running error tests"
-          exit 1
-  skip-tests:
-    needs: [error-tests]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-      - name: Run skip tests
-        run: |
-          echo "Running skip tests"
   
-
-
-
-
-      # - name: Extract Terraform Outputs
-      #   run: |
-      #     export S3_BUCKET_NAME=$(terraform output -state=tfstate s3_bucket_name)
-      #     export CLOUDFRONT_ID=$(terraform output -state=tfstate cloudfront_id)
-      #     export API_URL=$(terraform output -state=tfstate api_url)
-
-      # - name: Deploy S3 Buckets with Ansible (Integration)
-      #   run: |
-      #     ansible-playbook deploy_s3_files.yml \
-      #       -e "aws_region=your_region" \
-      #       -e "s3_bucket_name=$S3_BUCKET_NAME" \
-      #       -e "cloudfront_id=$CLOUDFRONT_ID" \
-      #       -e "api_url=$API_URL"
-
-      # - name: Run Frontend Tests
-      #   run: |
-      #     cd frontend
-      #     # Replace with your frontend test command (e.g., npm test)
-
-      # - name: Run Backend Tests
-      #   run: |
-      #     cd backend
-      #     # Replace with your backend test command (e.g., python -m unittest)
-
-      # - name: Destroy Terraform - Integration Environment
-      #   run: |
-      #     cd integration-environment
-      #     terraform destroy
-
-      # - name: Apply Terraform - Production Environment (if tests passed)
-      #   if: ${{ success() }}  # Only run if previous steps succeed
-      #   run: |
-      #     cd production-environment
-      #     terraform init
-      #     terraform apply
-
-      # - name: Deploy S3 Buckets with Ansible (Production) (if tests passed)
-      #   if: ${{ success() }}  # Only run if previous steps succeed
-      #   run: |
-      #     ansible-playbook deploy_s3_files.yml \
-      #       -e "aws_region=your_region" \
-      #       -e "s3_bucket_name=$S3_BUCKET_NAME" \
-      #       -e "cloudfront_id=$CLOUDFRONT_ID" \
-      #       -e "api_url=$API_URL"
-
-  # Upload your ansible playbooks to an artifact before running the workflow
-
