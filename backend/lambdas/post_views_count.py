@@ -17,7 +17,7 @@ def handler(event, context):
 
     dynamodb = boto3.resource("dynamodb")
     table = dynamodb.Table(table_name)
-    
+
     value = json.loads(event.get("body")).get("value")
     if value == None or type(value) != int:
         message = f"Error reading event input. Event: {event}."
@@ -32,7 +32,9 @@ def handler(event, context):
             ExpressionAttributeValues={":val": value},
         )
     except Exception as e:
-        message = f"Error updating item in table. Table name: '{table_name}', Item key: {key}, Attribute: {attribute}, Value: {value}, Exception: {e}"
+        message = f"Error updating item in table. \
+            Table name: '{table_name}', Item key: {key}, \
+                  Attribute: {attribute}, Value: {value}, Exception: {e}"
         return get_response(status=500, body={"message": message})
 
     return get_response(status=200, body={"value": value})
