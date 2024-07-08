@@ -86,25 +86,26 @@ jobs:
       API_ENDPOINT: ${{ steps.set-outputs.outputs.API_ENDPOINT }}
   backend-tests:
     needs: [development-env-setup, path-changes]
-    if: ${{ needs.path-changes.outputs.backend == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
       - name: Install python libraries
+        if: ${{ needs.path-changes.outputs.backend == 'true' }}
         run: |
           pip install pytest
       - name: Run backend tests with pytest
+        if: ${{ needs.path-changes.outputs.backend == 'true' }}
         run: |
           pytest -s tests/backend --api-endpoint ${{ env.API_ENDPOINT }}
         env:
           API_ENDPOINT: ${{ needs.development-env-setup.outputs.API_ENDPOINT }}
   frontend-tests:
     needs: [development-env-setup, path-changes]
-    if: ${{ needs.path-changes.outputs.frontend == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
       - name: Run frontend tests
+        if: ${{ needs.path-changes.outputs.frontend == 'true' }}
         run: |
           echo "Running frontend tests"
   error-tests:
