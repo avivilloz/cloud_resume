@@ -23,14 +23,18 @@ def handler(event, context):
         message = f"Error reading event input. Event: {event}."
         return get_response(status=500, body={"message": message})
 
+    attribute = "views_count"
+
     try:
         table.update_item(
             Key=key,
-            UpdateExpression="SET views_count = :val",
+            UpdateExpression=f"SET {attribute} = :val",
             ExpressionAttributeValues={":val": value},
         )
     except Exception as e:
-        message = f"Error updating views_count. Exception: {e}"
+        message = f"Error updating item in table. \
+            Table name: '{table_name}', Item key: {key}, \
+                Attribute: {attribute}, Value: {value}, Exception: {e}"
         return get_response(status=500, body={"message": message})
 
     return get_response(status=200, body={"value": value})
