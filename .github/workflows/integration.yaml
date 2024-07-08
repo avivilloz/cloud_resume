@@ -108,7 +108,7 @@ jobs:
         run: |
           echo "Running frontend tests"
   error-tests:
-    needs: [frontend-tests]
+    needs: [frontend-tests, backend-tests]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
