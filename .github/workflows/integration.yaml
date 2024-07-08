@@ -96,21 +96,12 @@ jobs:
       VENV_NAME: "venv"
     steps:
       - uses: actions/checkout@master
-      - name: Setup venv and install requirements
+      - name: Setup venv, install requirements and run backend tests
         if: ${{ needs.path-changes.outputs.backend == 'true' }}
         run: |
-          echo "Creating venv"
           python -m venv ${{ env.VENV_NAME }}
-          echo "Activating venv"
           . ${{ env.VENV_NAME }}/bin/activate
-          echo "Intalling requirements"
           pip install -r ${{ env.BACKEND_TESTS_DIR }}/requirements.txt
-      - name: Enter venv and backend tests
-        if: ${{ success() }}
-        run: |
-          echo "Activating venv"
-          . ${{ env.VENV_NAME }}/bin/activate
-          echo "Running backend tests"
           pytest -s ${{ env.BACKEND_TESTS_DIR }} --api-endpoint="${{ env.API_URL }}"
   frontend-tests:
     needs: [development-env-setup, path-changes]
@@ -121,21 +112,12 @@ jobs:
       VENV_NAME: "venv"
     steps:
       - uses: actions/checkout@master
-      - name: Setup venv and install requirements
+      - name: Setup venv, install requirements and run frontend tests
         if: ${{ needs.path-changes.outputs.frontend == 'true' }}
         run: |
-          echo "Creating venv"
           python -m venv ${{ env.VENV_NAME }}
-          echo "Activating venv"
           . ${{ env.VENV_NAME }}/bin/activate
-          echo "Intalling requirements"
           pip install -r ${{ env.FRONTEND_TESTS_DIR }}/requirements.txt
-      - name: Enter venv and frontend tests
-        if: ${{ success() }}
-        run: |
-          echo "Activating venv"
-          . ${{ env.VENV_NAME }}/bin/activate
-          echo "Running frontend tests"
           pytest -s ${{ env.FRONTEND_TESTS_DIR }} --website-url="${{ env.WEBSITE_URL }}"
   error-tests:
     needs: [frontend-tests, backend-tests]
