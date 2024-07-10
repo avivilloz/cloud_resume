@@ -1,31 +1,22 @@
 #!/bin/bash
 
-terraform_env_names=("development" "production")
-
-if [ $# -ne 1 ]; then
-    echo "Provide terraform environment name as argument (options: ${terraform_env_names[@]})"
-    exit 1
-fi
-
-found="false"
-for option in "${terraform_env_names[@]}"; do
-  if [[ "$option" == "$1" ]]; then
-    found="true"
-    break
-  fi
-done
-
-if [[ $found == "false" ]]; then
-  echo "Error: '${1}' is not a valid option."
-  echo "Valid options are: ${terraform_env_names[@]}"
-  exit 1
-fi
-
 project_base_dir="/home/deck/git/cloud_resume"
 
 terraform_env=$1
 terraform_envs_dir="$project_base_dir/infra/terraform/environments"
 terraform_env_path="$terraform_envs_dir/$terraform_env"
+
+if [ $# -ne 1 ]; then
+  echo "Provide terraform environment name as argument." 
+  echo "Terraform environments can be found under '$terraform_envs_dir' dir."
+  exit 1
+fi
+
+if [ ! -d "$terraform_env_path" ]; then
+  echo "Error: '$terraform_env' is not a valid terraform environment name."
+  echo "Terraform environments can be found under '$terraform_envs_dir' dir."
+  exit 1
+fi
 
 ansible_files_dir="$project_base_dir/infra/ansible"
 ansible_deploy_path="$ansible_files_dir/website_deploy.yaml"
