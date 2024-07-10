@@ -1,7 +1,7 @@
 async function setViewsCount() {
     const views = document.getElementById('views');
     try {
-        const getUrl = "__VIEWS_COUNT_API_ENDPOINT__";
+        const getUrl = "__API_URL__/views-count";
         const response = await fetch(getUrl);
         const data = await response.json();
         views.textContent = data.value.toString();
