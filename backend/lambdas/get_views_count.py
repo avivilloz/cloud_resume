@@ -21,8 +21,8 @@ def handler(event, context):
     try:
         response = table.get_item(Key=key)
     except Exception as e:
-        message = f"Error fetching item from table. \
-            Table name: '{table_name}', Item key: {key}, Exception: {e}"
+        message = f"""Error fetching item from table.
+        Table name: '{table_name}', Item key: {key}, Exception: {e}"""
         return get_response(status=500, body={"message": message})
 
     attribute = "views_count"
@@ -40,9 +40,9 @@ def handler(event, context):
             ExpressionAttributeValues={":val": count},
         )
     except Exception as e:
-        message = f"Error updating item in table. \
-            Table name: '{table_name}', Item key: {key}, \
-                Attribute: {attribute}, Value: {count}, Exception: {e}"
+        message = f"""Error updating item in table. 
+        Table name: '{table_name}', Item key: {key}, 
+        Attribute: {attribute}, Value: {count}, Exception: {e}"""
         return get_response(status=500, body={"message": message})
 
     return get_response(status=200, body={"value": count})
