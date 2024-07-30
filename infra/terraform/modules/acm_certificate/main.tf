@@ -1,10 +1,8 @@
 resource "aws_acm_certificate" "acm_certificate" {
-  domain_name       = var.domain_name
+  domain_name       = var.subdomain_name
   validation_method = "DNS"
 
-  subject_alternative_names = [
-    "*.${var.domain_name}"
-  ]
+  subject_alternative_names = [var.api_domain_name]
 
   lifecycle {
     create_before_destroy = true
@@ -22,7 +20,7 @@ resource "cloudflare_record" "acm_certificate" {
       name  = dvo.resource_record_name
       value = dvo.resource_record_value
       type  = dvo.resource_record_type
-    } if dvo.domain_name == var.domain_name
+    }
   }
 
   allow_overwrite = true

@@ -1,11 +1,4 @@
 variable "s3_website_endpoint" { type = string }
-
-variable "custom_domain_name" {
-  type    = string
-  default = ""
-}
-
-variable "acm_certificate_arn" {
-  type    = string
-  default = ""
-}
+variable "acm_certificate_arn" { type = string }
+variable "domain_name" { type = string }
+variable "subdomain_name" { type = string }

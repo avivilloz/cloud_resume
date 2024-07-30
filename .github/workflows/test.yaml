@@ -1,0 +1,28 @@
+name: Run Tests
+
+on:
+  workflow_call:
+    inputs:
+        LAB:
+            type: string
+            required: true
+        PYTEST_ARGS:
+            type: string
+            required: true
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    env:
+      TESTS_DIR: "tests/${{ inputs.LAB }}"
+      VENV_NAME: "venv"
+
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup venv, install requirements and run tests
+        run: |
+          python -m venv ${{ env.VENV_NAME }}
+          . ${{ env.VENV_NAME }}/bin/activate
+          pip install -r ${{ env.TESTS_DIR }}/requirements.txt
+          pytest -s ${{ env.TESTS_DIR }} ${{ inputs.PYTEST_ARGS }}"

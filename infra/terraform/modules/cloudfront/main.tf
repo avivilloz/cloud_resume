@@ -1,6 +1,6 @@
 resource "aws_cloudfront_distribution" "cloudfront" {
   enabled = true
-  aliases = var.custom_domain_name == "" ? [] : [var.custom_domain_name]
+  aliases = [var.subdomain_name]
 
   origin {
     domain_name = var.s3_website_endpoint
@@ -22,10 +22,9 @@ resource "aws_cloudfront_distribution" "cloudfront" {
   }
 
   viewer_certificate {
-    acm_certificate_arn            = var.acm_certificate_arn
-    cloudfront_default_certificate = var.acm_certificate_arn == "" ? true : false
-    ssl_support_method             = "sni-only"
-    minimum_protocol_version       = "TLSv1"
+    acm_certificate_arn      = var.acm_certificate_arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1"
   }
 
   default_cache_behavior {
@@ -41,15 +40,13 @@ resource "aws_cloudfront_distribution" "cloudfront" {
 # DNS RECORD
 
 data "cloudflare_zone" "cloudfront" {
-  count = var.custom_domain_name != "" ? 1 : 0
-  name  = var.custom_domain_name
+  name = var.domain_name
 }
 
 resource "cloudflare_record" "cloudfront" {
-  count           = var.custom_domain_name != "" ? 1 : 0
   allow_overwrite = true
-  zone_id         = data.cloudflare_zone.cloudfront[count.index].zone_id
-  name            = var.custom_domain_name
+  zone_id         = data.cloudflare_zone.cloudfront.zone_id
+  name            = var.subdomain_name
   value           = aws_cloudfront_distribution.cloudfront.domain_name
   type            = "CNAME"
 }

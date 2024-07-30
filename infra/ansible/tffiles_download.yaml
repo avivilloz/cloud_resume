@@ -6,25 +6,19 @@
   vars:
     # outside vars
     project_base_dir: "{{ project_base_dir }}"
+    terraform_env: "{{ terraform_env }}"
 
     # local vars
-    tf_envs_dir: "{{ project_base_dir }}/infra/terraform/environments"
+    terraform_dir: "{{ project_base_dir }}/infra/terraform"
     s3_bucket_name: "avivilloz-tffiles"
 
   tasks:
     - name: Download terraform tf files
       amazon.aws.s3_object:
         bucket: "{{ s3_bucket_name }}"
-        object: "{{ item.object }}"
-        dest: "{{ item.dest }}"
+        object: "{{ terraform_env }}.{{ item.file_type }}"
+        dest: "{{ terraform_dir }}/terraform.{{ item.file_type }}"
         mode: get
       with_items:
-        - object: "production.tfstate"
-          dest: "{{ tf_envs_dir }}/production/terraform.tfstate"
-        - object: "production.tfvars"
-          dest: "{{ tf_envs_dir }}/production/terraform.tfvars"
-
-        - object: "development.tfstate"
-          dest: "{{ tf_envs_dir }}/development/terraform.tfstate"
-        - object: "development.tfvars"
-          dest: "{{ tf_envs_dir }}/development/terraform.tfvars"
+        - file_type: "tfstate"
+        - file_type: "tfvars"
