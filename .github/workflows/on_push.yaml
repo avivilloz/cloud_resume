@@ -11,14 +11,14 @@ jobs:
   path-changes:
     runs-on: ubuntu-latest
     steps:
-    - uses: dorny/paths-filter@master
-      id: path-changes
-      with:
-        filters: |
-          frontend:
-            - 'frontend/**'
-          backend:
-            - 'backend/**'  
+      - uses: dorny/paths-filter@master
+        id: path-changes
+        with:
+          filters: |
+            frontend:
+              - 'frontend/**'
+            backend:
+              - 'backend/**'  
     outputs:
       frontend: ${{ steps.path-changes.outputs.frontend }}
       backend: ${{ steps.path-changes.outputs.backend }}
