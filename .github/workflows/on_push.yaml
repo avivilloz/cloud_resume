@@ -11,6 +11,7 @@ jobs:
   path-changes:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@master
       - uses: dorny/paths-filter@master
         id: path-changes
         with:
@@ -26,6 +27,7 @@ jobs:
   dev-env-setup:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@master
       - uses: ./.github/workflows/deploy.yml@master
         id: deploy
         with:
@@ -41,6 +43,7 @@ jobs:
       BACKEND_DIR_MODIFIED: ${{ needs.path-changes.outputs.frontend }}
       API_URL: ${{ needs.dev-env-setup.outputs.API_URL }}
     steps:
+      - uses: actions/checkout@master
       - uses: ./.github/workflows/test.yml@master
         if: ${{ env.BACKEND_DIR_MODIFIED == 'true' }}
         with:
@@ -54,6 +57,7 @@ jobs:
       FRONTEND_DIR_MODIFIED: ${{ needs.path-changes.outputs.frontend }}
       WEBSITE_URL: ${{ needs.dev-env-setup.outputs.WEBSITE_URL }}
     steps:
+      - uses: actions/checkout@master
       - uses: ./.github/workflows/test.yml@master
         if: ${{ env.FRONTEND_DIR_MODIFIED == 'true' }}
         with:
@@ -64,6 +68,7 @@ jobs:
     needs: [backend-tests, frontend-tests]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@master
       - uses: ./.github/workflows/deploy.yml@master
         id: deploy
         with:
