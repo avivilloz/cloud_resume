@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - uses: ./.github/workflows/deploy.yml
+      - uses: ./.github/workflows/deploy.yaml
         id: deploy
         with:
             TERRAFORM_ENV: development
@@ -44,7 +44,7 @@ jobs:
       API_URL: ${{ needs.dev-env-setup.outputs.API_URL }}
     steps:
       - uses: actions/checkout@master
-      - uses: ./.github/workflows/test.yml
+      - uses: ./.github/workflows/test.yaml
         if: ${{ env.BACKEND_DIR_MODIFIED == 'true' }}
         with:
             LAB: "backend"
@@ -58,7 +58,7 @@ jobs:
       WEBSITE_URL: ${{ needs.dev-env-setup.outputs.WEBSITE_URL }}
     steps:
       - uses: actions/checkout@master
-      - uses: ./.github/workflows/test.yml
+      - uses: ./.github/workflows/test.yaml
         if: ${{ env.FRONTEND_DIR_MODIFIED == 'true' }}
         with:
             LAB: "frontend"
@@ -69,6 +69,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - uses: ./.github/workflows/deploy.yml
+      - uses: ./.github/workflows/deploy.yaml
         with:
             TERRAFORM_ENV: production
