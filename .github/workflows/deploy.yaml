@@ -6,6 +6,11 @@ on:
         TERRAFORM_ENV:
             type: string
             required: true
+    outputs:
+      API_URL: 
+        value: ${{ jobs.deploy-website.outputs.API_URL }}
+      WEBSITE_URL: 
+        value: ${{ jobs.deploy-website.outputs.WEBSITE_URL }}
 
 jobs:
   deploy-website:
@@ -90,4 +95,3 @@ jobs:
     outputs:
       API_URL: ${{ steps.set-outputs.outputs.API_URL }}
       WEBSITE_URL: ${{ steps.set-outputs.outputs.WEBSITE_URL }}
-

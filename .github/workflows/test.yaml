@@ -9,6 +9,9 @@ on:
         PYTEST_ARGS:
             type: string
             required: true
+        SHOULD_RUN:
+            type: string
+            required: true
 
 jobs:
   run-tests:
@@ -20,7 +23,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@master
+        if: ${{ inputs.SHOULD_RUN == 'true' }}
       - name: Setup venv, install requirements and run tests
+        if: ${{ inputs.SHOULD_RUN == 'true' }}
         run: |
           python -m venv ${{ env.VENV_NAME }}
           . ${{ env.VENV_NAME }}/bin/activate

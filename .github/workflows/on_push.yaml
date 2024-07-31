@@ -8,67 +8,45 @@ on:
       - 'backend/**'
 
 jobs:
-  path-changes:
+  modified-dir-detection:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
       - uses: dorny/paths-filter@master
-        id: path-changes
+        id: modified-dir-detection
         with:
           filters: |
-            frontend:
+            FRONTEND:
               - 'frontend/**'
-            backend:
+            BACKEND:
               - 'backend/**'  
     outputs:
-      frontend: ${{ steps.path-changes.outputs.frontend }}
-      backend: ${{ steps.path-changes.outputs.backend }}
+      FRONTEND: ${{ steps.modified-dir-detection.outputs.FRONTEND }}
+      BACKEND: ${{ steps.modified-dir-detection.outputs.BACKEND }}
 
   dev-env-setup:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-      - uses: ./.github/workflows/deploy.yaml
-        id: deploy
-        with:
-            TERRAFORM_ENV: development
-    outputs:
-      API_URL: ${{ steps.deploy.outputs.API_URL }}
-      WEBSITE_URL: ${{ steps.deploy.outputs.WEBSITE_URL }}
+    uses: ./.github/workflows/deploy.yaml
+    with:
+        TERRAFORM_ENV: development
 
   backend-tests:
-    needs: [dev-env-setup, path-changes]
-    runs-on: ubuntu-latest
-    env:
-      BACKEND_DIR_MODIFIED: ${{ needs.path-changes.outputs.frontend }}
-      API_URL: ${{ needs.dev-env-setup.outputs.API_URL }}
-    steps:
-      - uses: actions/checkout@master
-      - uses: ./.github/workflows/test.yaml
-        if: ${{ env.BACKEND_DIR_MODIFIED == 'true' }}
-        with:
-            LAB: "backend"
-            PYTEST_ARGS: "--api-url=${{ env.API_URL }}"
+    needs: [dev-env-setup, modified-dir-detection]
+    uses: ./.github/workflows/test.yaml
+    with:
+        LAB: "backend"
+        PYTEST_ARGS: "--api-url=${{ needs.dev-env-setup.outputs.API_URL }}"
+        SHOULD_RUN: "${{ needs.modified-dir-detection.outputs.BACKEND }}"
 
   frontend-tests:
-    needs: [dev-env-setup, path-changes]
-    runs-on: ubuntu-latest
-    env:
-      FRONTEND_DIR_MODIFIED: ${{ needs.path-changes.outputs.frontend }}
-      WEBSITE_URL: ${{ needs.dev-env-setup.outputs.WEBSITE_URL }}
-    steps:
-      - uses: actions/checkout@master
-      - uses: ./.github/workflows/test.yaml
-        if: ${{ env.FRONTEND_DIR_MODIFIED == 'true' }}
-        with:
-            LAB: "frontend"
-            PYTEST_ARGS: "--website-url=${{ env.WEBSITE_URL }}"
+    needs: [dev-env-setup, modified-dir-detection]
+    uses: ./.github/workflows/test.yaml
+    with:
+        LAB: "frontend"
+        PYTEST_ARGS: "--website-url=${{ needs.dev-env-setup.outputs.WEBSITE_URL }}"
+        SHOULD_RUN: "${{ needs.modified-dir-detection.outputs.FRONTEND }}"
 
   website-deployment:
     needs: [backend-tests, frontend-tests]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-      - uses: ./.github/workflows/deploy.yaml
-        with:
-            TERRAFORM_ENV: production
+    uses: ./.github/workflows/deploy.yaml
+    with:
+        TERRAFORM_ENV: production
