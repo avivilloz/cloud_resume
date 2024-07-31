@@ -17,5 +17,4 @@ jobs:
       - name: Test Docker
         run: | 
           docker build -t my-pytest-image ${{ env.TESTS_DIR }}
-          docker run my-pytest-image
-          # docker run my-pytest-image -- --api-url=https://resume-dev-api.avivilloz.com
+          docker run my-pytest-image -- --api-url=https://resume-dev-api.avivilloz.com

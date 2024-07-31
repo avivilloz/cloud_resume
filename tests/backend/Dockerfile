@@ -5,14 +5,10 @@ FROM python:3
 WORKDIR /app
 
 # Copy the requirements file
-# COPY requirements.txt ./
 COPY . .
 
 # Install dependencies
 RUN pip install -r requirements.txt   
 
-# Copy the project code
-# COPY . .
-
 # Command to run when container starts
-ENTRYPOINT ["ls"]
+ENTRYPOINT ["pytest", "tests"]
