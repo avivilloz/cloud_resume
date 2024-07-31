@@ -11,12 +11,12 @@ COPY . .
 RUN pip install -r requirements.txt
 
 # Install ChromeDriver
-RUN apt-get update && \
-    apt-get install -y wget
+RUN apt-get update && apt-get install -y wget unzip
 
-RUN wget -O /usr/local/bin/chromedriver https://storage.googleapis.com/chrome-for-testing-public/127.0.6533.88/linux64/chromedriver-linux64.zip && \
-    unzip /usr/local/bin/chromedriver -d /usr/local/bin && \
-    chmod +x /usr/local/bin/chromedriver
+RUN echo $PATH
+
+RUN wget https://storage.googleapis.com/chrome-for-testing-public/127.0.6533.88/linux64/chromedriver-linux64.zip && \
+    unzip chromedriver-linux64.zip && cp chromedriver-linux64/chromedriver /usr/local/bin/
 
 # Command to run when container starts
 ENTRYPOINT ["pytest", "tests"]
