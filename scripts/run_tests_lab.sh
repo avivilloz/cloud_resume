@@ -21,4 +21,4 @@ fi
 python -m venv $venv_name
 . $venv_name/bin/activate
 pip install -r $lab_dir/requirements.txt
-pytest -s $lab_dir $pytest_args
+pytest -s $lab_dir/tests $pytest_args
