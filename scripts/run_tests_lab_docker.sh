@@ -18,4 +18,4 @@ elif [ $lab_name == "backend" ]; then
 fi
 
 docker build -t test $lab_dir
-docker run test --api-url $pytest_args
+docker run test $pytest_args
