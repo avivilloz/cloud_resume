@@ -14,7 +14,7 @@
 
 # What's next:
 
-- Deploy website from docker/kubernetes
-- Run tests using docker/kubernetes
-- Use docker/kubernetes on github actions
+- Deploy website from docker/docker-compose/kubernetes
+- Run tests using docker/docker-compose/kubernetes
+- Use docker/docker-compose/kubernetes on github actions
 - Do the same for azure/gcp
