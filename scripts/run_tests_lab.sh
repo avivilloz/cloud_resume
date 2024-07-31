@@ -13,9 +13,9 @@ venv_name="venv"
 lab_dir="$project_base_dir/tests/$lab_name"
 
 if [ $lab_name == "frontend" ]; then
-    pytest_args="--website-url=https://dev.avivilloz.com"
+    pytest_args="--website-url=https://resume-dev.avivilloz.com"
 elif [ $lab_name == "backend" ]; then
-    pytest_args="--api-url=https://dev-api.avivilloz.com"
+    pytest_args="--api-url=https://resume-dev-api.avivilloz.com"
 fi
 
 python -m venv $venv_name
