@@ -18,6 +18,7 @@ COPY . .
 # RUN ls chromedriver-linux64/
 # RUN cp chromedriver-linux64/chromedriver /usr/local/bin/
 
+
 # Command to run when container starts
 # ENTRYPOINT ["pytest", "tests", "--uc", "--xvfb"]
 ENTRYPOINT ["pytest", "tests"]
