@@ -30,4 +30,4 @@ jobs:
           python -m venv ${{ env.VENV_NAME }}
           . ${{ env.VENV_NAME }}/bin/activate
           pip install -r ${{ env.TESTS_DIR }}/requirements.txt
-          pytest -s ${{ env.TESTS_DIR }} ${{ inputs.PYTEST_ARGS }}"
+          pytest -s ${{ env.TESTS_DIR }} ${{ inputs.PYTEST_ARGS }}
