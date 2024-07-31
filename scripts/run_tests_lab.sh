@@ -1,7 +1,8 @@
 #!/bin/bash
 
 if [ $# -ne 2 ]; then
-    echo "Provide <project_base_dir> and <lab_name> as argument."
+    echo "Provide <project_base_dir> and <lab_name> as arguments."
+    echo "<lab_name> can be 'backend' or 'frontend'."
     exit 1
 fi
 

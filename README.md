@@ -1,6 +1,6 @@
 # Cloud Resume
 
-- Resume Link: https://avivilloz.com
+- Resume Link: https://resume.avivilloz.com
 
 # Technologies Used:
 
