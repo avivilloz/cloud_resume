@@ -4,8 +4,19 @@ on:
   workflow_call:
     inputs:
         TERRAFORM_ENV:
-            type: string
-            required: true
+          type: string
+          required: true
+        AWS_DEFAULT_REGION:
+          type: string
+          required: true
+    secrets:
+        AWS_ACCESS_KEY_ID:
+          required: true
+        AWS_SECRET_ACCESS_KEY:
+          required: true
+        CLOUDFLARE_API_TOKEN:
+          required: true
+
     outputs:
       API_URL: 
         value: ${{ jobs.deploy-website.outputs.API_URL }}
@@ -17,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-        AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+        AWS_DEFAULT_REGION: ${{ inputs.AWS_DEFAULT_REGION }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
