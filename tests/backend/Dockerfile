@@ -14,4 +14,4 @@ RUN pip install -r requirements.txt  
 COPY tests/ ./
 
 # Command to run when container starts
-CMD ["pytest", "tests"]
+ENTRYPOINT ["pytest", "tests"]
