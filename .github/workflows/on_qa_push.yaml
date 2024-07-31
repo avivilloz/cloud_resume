@@ -20,7 +20,6 @@ jobs:
               - 'tests/frontend/**'
             BACKEND:
               - 'tests/backend/**'  
-
     outputs:
       FRONTEND: ${{ steps.modified-dir-detection.outputs.FRONTEND }}
       BACKEND: ${{ steps.modified-dir-detection.outputs.BACKEND }}
