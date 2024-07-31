@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
         if: ${{ inputs.SHOULD_RUN == 'true' }}
-      - name: Setup venv, install requirements and run tests
+      - name: Install requirements and run tests in docker container
         if: ${{ inputs.SHOULD_RUN == 'true' }}
         run: |
           docker build -t test ${{ env.LAB_DIR }}
