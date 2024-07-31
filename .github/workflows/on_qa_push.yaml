@@ -1,0 +1,52 @@
+name: Test and deploy website
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'tests/frontend/**'
+      - 'tests/backend/**'
+
+jobs:
+  modified-dir-detection:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: dorny/paths-filter@master
+        id: modified-dir-detection
+        with:
+          filters: |
+            FRONTEND:
+              - 'tests/frontend/**'
+            BACKEND:
+              - 'tests/backend/**'  
+
+    outputs:
+      FRONTEND: ${{ steps.modified-dir-detection.outputs.FRONTEND }}
+      BACKEND: ${{ steps.modified-dir-detection.outputs.BACKEND }}
+
+  dev-env-setup:
+    uses: ./.github/workflows/deploy.yaml
+    with:
+        TERRAFORM_ENV: development
+        AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+    secrets:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+  backend-tests:
+    needs: [dev-env-setup, modified-dir-detection]
+    uses: ./.github/workflows/test.yaml
+    with:
+        LAB: "backend"
+        PYTEST_ARGS: "--api-url=${{ needs.dev-env-setup.outputs.API_URL }}"
+        SHOULD_RUN: "${{ needs.modified-dir-detection.outputs.BACKEND }}"
+
+  frontend-tests:
+    needs: [dev-env-setup, modified-dir-detection]
+    uses: ./.github/workflows/test.yaml
+    with:
+        LAB: "frontend"
+        PYTEST_ARGS: "--website-url=${{ needs.dev-env-setup.outputs.WEBSITE_URL }}"
+        SHOULD_RUN: "${{ needs.modified-dir-detection.outputs.FRONTEND }}"
