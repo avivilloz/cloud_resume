@@ -18,8 +18,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      TESTS_DIR: "tests/${{ inputs.LAB }}"
-      VENV_NAME: "venv"
+      LAB_DIR: "tests/${{ inputs.LAB }}"
 
     steps:
       - uses: actions/checkout@master
@@ -27,7 +26,5 @@ jobs:
       - name: Setup venv, install requirements and run tests
         if: ${{ inputs.SHOULD_RUN == 'true' }}
         run: |
-          python -m venv ${{ env.VENV_NAME }}
-          . ${{ env.VENV_NAME }}/bin/activate
-          pip install -r ${{ env.TESTS_DIR }}/requirements.txt
-          pytest -s ${{ env.TESTS_DIR }} ${{ inputs.PYTEST_ARGS }}
+          docker build -t test ${{ env.LAB_DIR }}
+          docker run test ${{ inputs.PYTEST_ARGS }}
