@@ -8,6 +8,7 @@ temp/
 .terraform.tfstate.lock.info
 terraform.tfvars
 terraform.tfstate
+terraform.tfstate.d/
 terraform.tfstate.backup
 
 # python
