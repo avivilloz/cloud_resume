@@ -25,19 +25,18 @@ jobs:
       FRONTEND: ${{ steps.modified-dir-detection.outputs.FRONTEND }}
       BACKEND: ${{ steps.modified-dir-detection.outputs.BACKEND }}
 
-  # dev-env-setup:
-  #   uses: ./.github/workflows/deploy.yaml
-  #   with:
-  #       TERRAFORM_ENV: development
-  #       AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
-  #   secrets:
-  #       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+  dev-env-setup:
+    uses: ./.github/workflows/deploy.yaml
+    with:
+        TERRAFORM_ENV: development
+        AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+    secrets:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
   backend-tests:
-    # needs: [dev-env-setup, modified-dir-detection]
-    needs: [modified-dir-detection]
+    needs: [dev-env-setup, modified-dir-detection]
     uses: ./.github/workflows/test.yaml
     with:
         LAB: "backend"
@@ -45,8 +44,7 @@ jobs:
         SHOULD_RUN: "${{ needs.modified-dir-detection.outputs.BACKEND }}"
 
   frontend-tests:
-    # needs: [dev-env-setup, modified-dir-detection]
-    needs: [modified-dir-detection]
+    needs: [dev-env-setup, modified-dir-detection]
     uses: ./.github/workflows/test.yaml
     with:
         LAB: "frontend"
