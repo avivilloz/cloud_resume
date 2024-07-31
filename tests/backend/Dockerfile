@@ -11,7 +11,7 @@ COPY requirements.txt ./
 RUN pip install -r requirements.txt   
 
 # Copy the project code
-COPY tests/ ./
+COPY tests ./
 
 # Command to run when container starts
 ENTRYPOINT ["pytest", "tests"]
