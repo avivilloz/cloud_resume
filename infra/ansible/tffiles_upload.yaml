@@ -10,29 +10,16 @@
 
     # local vars
     s3_bucket_name: "avivilloz-tffiles"
-    s3_buckets_dir: "{{ project_base_dir }}/temp/s3_buckets"
-    s3_bucket_sync_dir: "{{ s3_buckets_dir }}/{{ s3_bucket_name }}"
     terraform_dir: "{{ project_base_dir }}/infra/terraform"
 
   tasks:
-    - name: Create s3_tffiles_bucket_sync dir
-      ansible.builtin.file:
-        state: directory
-        path: "{{ s3_bucket_sync_dir }}"
-        mode: "0755"
-
-    - name: Copy s3 files to s3_tffiles_bucket_sync dir
-      ansible.builtin.copy:
+    - name: Download terraform tf files
+      amazon.aws.s3_object:
+        bucket: "{{ s3_bucket_name }}"
+        object: "{{ terraform_env }}.{{ item.file_type }}"
         src: "{{ terraform_dir }}/terraform.{{ item.file_type }}"
-        dest: "{{ s3_bucket_sync_dir }}/{{ terraform_env }}.{{ item.file_type }}"
-        mode: "0755"
+        overwrite: true
+        mode: put
       with_items:
         - file_type: "tfstate"
         - file_type: "tfvars"
-
-    - name: Synchronize directory contents to S3 bucket
-      community.aws.s3_sync:
-        bucket: "{{ s3_bucket_name }}"
-        file_root: "{{ s3_bucket_sync_dir }}"
-        permission: "public-read"
-        delete: true
