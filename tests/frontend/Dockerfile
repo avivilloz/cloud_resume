@@ -9,7 +9,7 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies
-RUN pip install -r requirements.txt
+# RUN pip install -r requirements.txt
 
 # Install ChromeDriver
 # RUN apt-get update && apt-get install -y wget unzip xvfb
