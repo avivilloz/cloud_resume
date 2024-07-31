@@ -16,7 +16,6 @@ RUN apt-get update && \
 
 RUN wget -O /usr/local/bin/chromedriver https://storage.googleapis.com/chrome-for-testing-public/127.0.6533.88/linux64/chromedriver-linux64.zip && \
     unzip /usr/local/bin/chromedriver -d /usr/local/bin && \
-    rm /usr/local/bin/chromedriver.zip && \
     chmod +x /usr/local/bin/chromedriver
 
 # Command to run when container starts
