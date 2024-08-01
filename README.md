@@ -1,20 +1,21 @@
 # Cloud Resume
 
-- Resume Link: https://resume.avivilloz.com
+- Project Initiative: https://cloudresumechallenge.dev/
+- Resume Link: https://resume.avivilloz.com/
 
 # Technologies Used:
 
-- Front-end: HTML/CSS/Javascript
-- Back-end: Python/Lambda/API Gateway/OpenAPI/DynamoDB
-- AWS services: S3/API Gateway/DynamoDB/CloudFront/Lambda
-- IaC: Terraform/Ansible
-- Tests: Python/Pytest
+- Front-end: HTML, CSS, Javascript
+- Back-end: Python, Lambda, API Gateway, OpenAPI, DynamoDB
+- AWS services: S3, API Gateway, DynamoDB, CloudFront, Lambda
+- IaC: Terraform
+- Configuration: Ansible
+- Automation/Scripting: Bash
+- Testing: Python, Pytest, Selenium
 - CI/CD: GitHub Actions
+- Containerization: Docker 
 - DNS: Cloudflare
 
 # What's next:
 
-- Deploy website from docker/docker-compose/kubernetes
-- Run tests using docker/docker-compose/kubernetes
-- Use docker/docker-compose/kubernetes on github actions
-- Do the same for azure/gcp
+- Create infrastructure in Azure and GCP
