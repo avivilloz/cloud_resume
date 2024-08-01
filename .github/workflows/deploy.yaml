@@ -41,7 +41,10 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y ansible
 
       - name: Install python libraries
-        run: python -m pip install boto3 botocore
+        run: |
+          pip install boto3 botocore
+          pip freeze > requirements.txt
+          cat requirements.txt
 
       - name: Download terraform tf files from s3 bucket using ansible
         if: ${{ success() }}
