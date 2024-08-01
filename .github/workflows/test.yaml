@@ -23,8 +23,11 @@ jobs:
     steps:
       - uses: actions/checkout@master
         if: ${{ inputs.SHOULD_RUN == 'true' }}
-      - name: Install requirements and run tests in docker container
-        if: ${{ inputs.SHOULD_RUN == 'true' }}
-        run: |
-          docker build -t test ${{ env.LAB_DIR }}
-          docker run test ${{ inputs.PYTEST_ARGS }}
+
+      - name: Build docker image with tests requirements
+        if: ${{ inputs.SHOULD_RUN == 'true' && success() }}
+        run: docker build -t test ${{ env.LAB_DIR }}
+
+      - name: Run tests in docker container
+        if: ${{ inputs.SHOULD_RUN == 'true' && success() }}
+        run: docker run test ${{ inputs.PYTEST_ARGS }}

@@ -16,7 +16,6 @@ on:
           required: true
         CLOUDFLARE_API_TOKEN:
           required: true
-
     outputs:
       API_URL: 
         value: ${{ jobs.deploy-website.outputs.API_URL }}
@@ -39,12 +38,10 @@ jobs:
       - uses: actions/checkout@master
 
       - name: Install ansible
-        run: |
-          sudo apt-get update && sudo apt-get install -y ansible
+        run: sudo apt-get update && sudo apt-get install -y ansible
 
       - name: Install python libraries
-        run: |
-          /opt/pipx/venvs/ansible-core/bin/python -m pip install boto3 botocore
+        run: /opt/pipx/venvs/ansible-core/bin/python -m pip install boto3 botocore
 
       - name: Download terraform tf files from s3 bucket using ansible
         if: ${{ success() }}
@@ -53,7 +50,7 @@ jobs:
             -e "project_base_dir=${{ github.workspace }}" \
             -e "terraform_env=${{ inputs.TERRAFORM_ENV }}"
 
-      - name: Setup development environment using terraform 
+      - name: Provision infra and backend using terraform 
         if: ${{ success() }}
         run: |
           terraform -chdir=${{ env.TERRAFORM_DIR }} init

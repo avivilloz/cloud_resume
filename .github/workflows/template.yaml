@@ -9,8 +9,10 @@ on:
 jobs:
   template-job:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@master
+
       - name: Template
         run: | 
           echo "This is just a template"
