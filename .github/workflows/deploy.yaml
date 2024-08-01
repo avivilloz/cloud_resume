@@ -42,8 +42,8 @@ jobs:
 
       - name: Install python libraries
         run: |
-          pip install boto3 botocore
-          pip freeze > requirements.txt
+          /opt/pipx/venvs/ansible-core/bin/python -m pip install boto3 botocore
+          /opt/pipx/venvs/ansible-core/bin/python -m pip freeze > requirements.txt
           cat requirements.txt
 
       - name: Download terraform tf files from s3 bucket using ansible
