@@ -12,4 +12,4 @@ RUN pacman -Sy
 RUN pacman -S --needed --noconfirm terraform ansible
 
 # Command to run when container starts
-ENTRYPOINT ["terraform", "--help"]
+ENTRYPOINT ["ansible", "--help"]
