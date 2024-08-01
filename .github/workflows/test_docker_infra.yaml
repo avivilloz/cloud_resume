@@ -32,4 +32,4 @@ jobs:
           push: true
           context: .
           file: ./infra/Dockerfile
-          tags: avivilloz/cloud-resume-deploy:latest
+          tags: avivilloz/cloud-resume:deploy
