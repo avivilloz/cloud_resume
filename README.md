@@ -20,3 +20,7 @@
 # What's next:
 
 - Create infrastructure in Azure and GCP
+
+# Design:
+
+![Image description](design.png)
