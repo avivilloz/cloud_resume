@@ -5,13 +5,14 @@
 
 # Technologies Used:
 
-- Front-end: HTML, CSS, Javascript
+- Front-end: HTML, CSS, Javascript, S3, CloudFront
 - Back-end: Python, Lambda, API Gateway, OpenAPI, DynamoDB
-- AWS services: S3, API Gateway, DynamoDB, CloudFront, Lambda
+- AWS services: S3, API Gateway, DynamoDB, CloudFront, Lambda, CloudWatch
 - IaC: Terraform
 - Configuration: Ansible
 - Automation/Scripting: Bash
 - Testing: Python, Pytest, Selenium
+- Debugging: CloudWatch
 - CI/CD: GitHub Actions
 - Containerization: Docker 
 - DNS: Cloudflare
