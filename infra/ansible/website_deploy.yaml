@@ -16,7 +16,6 @@
     s3_bucket_sync_dir: "{{ s3_buckets_dir }}/{{ s3_bucket_name }}"
     script_js_path: "{{ s3_bucket_sync_dir }}/script.js"
 
-
   tasks:
     - name: Install required python libraries
       ansible.builtin.pip:
