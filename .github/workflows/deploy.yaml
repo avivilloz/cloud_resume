@@ -42,12 +42,6 @@ jobs:
       - name: Install ansible
         run: sudo apt-get update && sudo apt-get install -y ansible
 
-      # - name: Install python libraries
-      #   run: |
-      #     /opt/pipx/venvs/ansible-core/bin/python -m pip install -r infra/requirements.txt
-      #     /opt/pipx/venvs/ansible-core/bin/python -m pip freeze > requirements.txt
-      #     cat requirements.txt
-
       - name: Download terraform tf files from s3 bucket using ansible
         if: ${{ success() }}
         run: |
