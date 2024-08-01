@@ -1,5 +1,5 @@
 # Use a base image
-FROM ubuntu:latest
+FROM archlinux:latest
 
 # Set the working directory
 WORKDIR /app
@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies
-RUN apt-get update && apt-get install -y terraform ansible
+RUN pacman -Sy && pacman -S --needed terraform ansible
 
 # Command to run when container starts
 ENTRYPOINT ["terraform", "--help"]
