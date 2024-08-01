@@ -31,5 +31,5 @@ jobs:
         with:
           push: true
           context: .
-          file: ./infra/Dockerfile"
+          file: ./infra/Dockerfile
           tags: infra:latest
