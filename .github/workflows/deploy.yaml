@@ -33,7 +33,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DOCKERFILE_PATH: ./infra/Dockerfile
       DOCKER_IMAGE: avivilloz/cloud-resume:deploy
 
     steps:
@@ -48,7 +47,7 @@ jobs:
         with:
           push: true
           context: .
-          file: ${{ env.DOCKERFILE_PATH }}
+          file: ./infra/Dockerfile
           tags: ${{ env.DOCKER_IMAGE }}
 
     outputs:
