@@ -8,7 +8,8 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies
-RUN pacman -Sy && pacman -S --needed terraform ansible
+RUN pacman -Sy 
+RUN pacman -S --needed terraform ansible
 
 # Command to run when container starts
 ENTRYPOINT ["terraform", "--help"]
