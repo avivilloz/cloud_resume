@@ -23,4 +23,4 @@
 
 # Design:
 
-![Image description](design.png)
+![Image description](design/design.png)
