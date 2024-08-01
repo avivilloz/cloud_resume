@@ -9,6 +9,9 @@ on:
       AWS_DEFAULT_REGION:
         type: string
         required: true
+      DOCKER_IMAGE:
+        type: string
+        required: true
 
     secrets:
       AWS_ACCESS_KEY_ID:
@@ -16,10 +19,6 @@ on:
       AWS_SECRET_ACCESS_KEY:
         required: true
       CLOUDFLARE_API_TOKEN:
-        required: true
-      DOCKERHUB_USERNAME:
-        required: true
-      DOCKERHUB_TOKEN:
         required: true
 
     outputs:
@@ -29,38 +28,9 @@ on:
         value: ${{ jobs.deploy-website.outputs.WEBSITE_URL }}
 
 jobs:
-  build-docker-image:
-    runs-on: ubuntu-latest
-
-    env:
-      DOCKERFILE_PATH: ./infra/Dockerfile
-      DOCKER_IMAGE: avivilloz/cloud-resume:deploy
-
-    steps:
-      - uses: actions/checkout@master
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          push: true
-          context: .
-          file: ${{ env.DOCKERFILE_PATH }}
-          tags: ${{ env.DOCKER_IMAGE }}
-
-    outputs:
-      DOCKER_IMAGE: ${{ env.DOCKER_IMAGE }}
-
-
   deploy-website:
-    needs: [build-docker-image]
     runs-on: ubuntu-latest
-    container: ${{ needs.build-docker-image.outputs.DOCKER_IMAGE }}
+    container: ${{ inputs.DOCKER_IMAGE }}
 
     env:
       AWS_DEFAULT_REGION: ${{ inputs.AWS_DEFAULT_REGION }}
@@ -72,9 +42,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@master
-
-      # - name: Install ansible
-      #   run: sudo apt-get update && sudo apt-get install -y ansible
 
       - name: Download terraform tf files from s3 bucket using ansible
         if: ${{ success() }}

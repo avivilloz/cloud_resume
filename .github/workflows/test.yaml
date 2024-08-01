@@ -3,31 +3,42 @@ name: Run Tests
 on:
   workflow_call:
     inputs:
-        LAB:
-            type: string
-            required: true
-        PYTEST_ARGS:
-            type: string
-            required: true
-        SHOULD_RUN:
-            type: string
-            required: true
+      LAB:
+        type: string
+        required: true
+      PYTEST_ARGS:
+        type: string
+        required: true
+      DOCKER_IMAGE:
+        type: string
+        required: true
+      
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: true
+      DOCKERHUB_TOKEN:
+        required: true
 
 jobs:
+  build-docker-image:
+    uses: ./.github/workflows/build_docker_image.yaml
+    with:
+      DOCKERFILE_PATH: tests/${{ inputs.LAB }}/Dockerfile
+      DOCKER_IMAGE: ${{ inputs.DOCKER_IMAGE }}
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
   run-tests:
+    needs: [build-docker-image]
     runs-on: ubuntu-latest
+    container: ${{ inputs.DOCKER_IMAGE }}
 
     env:
-      LAB_DIR: "tests/${{ inputs.LAB }}"
+      TESTS_DIR: "tests/${{ inputs.LAB }}/tests"
 
     steps:
       - uses: actions/checkout@master
-        if: ${{ inputs.SHOULD_RUN == 'true' }}
-
-      - name: Build docker image with tests requirements
-        if: ${{ inputs.SHOULD_RUN == 'true' && success() }}
-        run: docker build -t test ${{ env.LAB_DIR }}
 
       - name: Run tests in docker container
-        if: ${{ inputs.SHOULD_RUN == 'true' && success() }}
-        run: docker run test ${{ inputs.PYTEST_ARGS }}
+        run: pytest -s ${{ env.TESTS_DIR }}/tests ${{ inputs.PYTEST_ARGS }}

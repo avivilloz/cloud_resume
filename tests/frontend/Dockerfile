@@ -6,6 +6,3 @@ WORKDIR /app
 
 # Copy test files
 COPY . .
-
-# Command to run when container starts
-ENTRYPOINT ["pytest", "tests"]
