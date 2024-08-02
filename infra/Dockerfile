@@ -9,4 +9,4 @@ COPY . .
 
 # Install dependencies
 RUN pacman -Sy 
-RUN pacman -S --needed --noconfirm terraform ansible
+RUN pacman -S --needed --noconfirm python-pip terraform ansible
