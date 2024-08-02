@@ -36,10 +36,14 @@ jobs:
 
     env:
       ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
-      TESTS_DIR: "tests/${{ inputs.LAB }}/tests"
+      LAB_DIR: "tests/${{ inputs.LAB }}"
 
     steps:
       - uses: actions/checkout@master
 
-      - name: Run tests in docker container
-        run: pytest -s ${{ env.TESTS_DIR }} ${{ inputs.PYTEST_ARGS }}
+      - name: Run tests
+        run: |
+          python -m venv venv
+          . venv/bin/activate
+          pip install -r ${{ env.LAB_DIR }}/requirements.txt
+          pytest -s ${{ env.LAB_DIR }}/tests ${{ inputs.PYTEST_ARGS }}
