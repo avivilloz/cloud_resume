@@ -46,10 +46,8 @@ jobs:
       - name: Download terraform tf files from s3 bucket using ansible
         if: ${{ success() }}
         run: |
-          pwd
-          ls ${{ github.workspace }}
           ansible-playbook ${{ env.ANSIBLE_DIR }}/tffiles_download.yaml \
-            -e "project_base_dir=${{ github.workspace }}" \
+            -e "project_base_dir=$(pwd)" \
             -e "terraform_env=${{ inputs.TERRAFORM_ENV }}"
 
       - name: Provision infra and backend using terraform 
@@ -57,13 +55,13 @@ jobs:
         run: |
           terraform -chdir=${{ env.TERRAFORM_DIR }} init
           terraform -chdir=${{ env.TERRAFORM_DIR }} apply -auto-approve \
-            -var="project_base_dir=${{ github.workspace }}"
+            -var="project_base_dir=$(pwd)"
 
       - name: Upload terraform tf files to s3 bucket using ansible
         if: ${{ success() }}
         run: |
           ansible-playbook ${{ env.ANSIBLE_DIR }}/tffiles_upload.yaml \
-            -e "project_base_dir=${{ github.workspace }}" \
+            -e "project_base_dir=$(pwd)" \
             -e "terraform_env=${{ inputs.TERRAFORM_ENV }}"
 
       - name: Extract values from terraform tfstate file to be 
@@ -90,7 +88,7 @@ jobs:
         if: ${{ success() }}
         run: |
           ansible-playbook ${{ env.ANSIBLE_DIR }}/website_deploy.yaml \
-            -e "project_base_dir=${{ github.workspace }}" \
+            -e "project_base_dir=$(pwd)" \
             -e "s3_bucket_name=$S3_BUCKET_NAME" \
             -e "api_url=$API_URL" \
             -e "cloudfront_distribution_id=$CLOUDFRONT_DISTRIBUTION_ID"
