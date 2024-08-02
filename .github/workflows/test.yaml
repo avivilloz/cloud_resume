@@ -19,9 +19,6 @@ on:
       DOCKERHUB_TOKEN:
         required: true
 
-env:
-  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
-
 jobs:
   build-docker-image:
     uses: ./.github/workflows/build_docker_image.yaml
@@ -38,6 +35,7 @@ jobs:
     container: ${{ inputs.DOCKER_IMAGE }}
 
     env:
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
       TESTS_DIR: "tests/${{ inputs.LAB }}/tests"
 
     steps:

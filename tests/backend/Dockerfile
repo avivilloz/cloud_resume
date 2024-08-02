@@ -11,4 +11,4 @@ COPY tests/backend/requirements.txt ./requirements.txt
 RUN pwd && ls
 
 # Install dependencies
-RUN pip install -r tests/requirements.txt
+RUN pip install -r requirements.txt
