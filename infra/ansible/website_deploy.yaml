@@ -17,12 +17,6 @@
     script_js_path: "{{ s3_bucket_sync_dir }}/script.js"
 
   tasks:
-    - name: Install required python libraries
-      ansible.builtin.pip:
-        name:
-          - boto3==1.34.151
-          - botocore==1.34.151
-
     - name: Create s3 bucket sync dir
       ansible.builtin.file:
         state: directory
