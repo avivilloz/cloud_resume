@@ -13,11 +13,11 @@
     terraform_dir: "{{ project_base_dir }}/infra/terraform"
 
   tasks:
-    - name: Install required python libraries
-      ansible.builtin.pip:
-        name:
-          - boto3==1.34.151
-          - botocore==1.34.151
+    # - name: Install required python libraries
+    #   ansible.builtin.pip:
+    #     name:
+    #       - boto3==1.34.151
+    #       - botocore==1.34.151
 
     - name: Download terraform tf files
       amazon.aws.s3_object:
