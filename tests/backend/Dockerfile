@@ -5,10 +5,10 @@ FROM python:3
 WORKDIR /app
 
 # Copy test files
-COPY . .
+COPY tests/backend/requirements.txt ./requirements.txt
 
-RUN pwd
-RUN ls
+# Debugging
+RUN pwd && ls
 
 # Install dependencies
-RUN pip install -r requirements.txt
+RUN pip install -r tests/requirements.txt
