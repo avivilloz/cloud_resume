@@ -19,7 +19,7 @@
     #       - boto3==1.34.151
     #       - botocore==1.34.151
 
-    - name: Download terraform tf files
+    - name: Upload terraform tf files
       amazon.aws.s3_object:
         bucket: "{{ s3_bucket_name }}"
         object: "{{ terraform_env }}.{{ item.file_type }}"

@@ -46,6 +46,8 @@ jobs:
       - name: Download terraform tf files from s3 bucket using ansible
         if: ${{ success() }}
         run: |
+          pwd
+          ls ${{ github.workspace }}
           ansible-playbook ${{ env.ANSIBLE_DIR }}/tffiles_download.yaml \
             -e "project_base_dir=${{ github.workspace }}" \
             -e "terraform_env=${{ inputs.TERRAFORM_ENV }}"
