@@ -72,7 +72,10 @@ jobs:
   website-deployment:
     needs: [build-deploy-docker-image, backend-tests, frontend-tests]
     uses: ./.github/workflows/deploy.yaml
-    if: (needs.frontend-tests.result == 'success' || needs.backend-tests.result == 'success')
+    if: |
+      always() &&
+      (needs.backend-tests.result == 'skipped' || needs.backend-tests.result == 'success') &&
+      (needs.frontend-tests.result == 'skipped' || needs.frontend-tests.result == 'success')
     with:
       TERRAFORM_ENV: production
       AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
