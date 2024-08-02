@@ -7,5 +7,8 @@ WORKDIR /app
 # Copy test files
 COPY . .
 
+RUN pwd
+RUN ls
+
 # Install dependencies
 RUN pip install -r requirements.txt
