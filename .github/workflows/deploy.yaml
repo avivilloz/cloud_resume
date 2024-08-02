@@ -48,7 +48,7 @@ jobs:
         run: |
           env
           ansible-playbook ${{ env.ANSIBLE_DIR }}/tffiles_download.yaml \
-            -e "project_base_dir=$(pwd)" \
+            -e "project_base_dir=$GITHUB_WORKSPACE" \
             -e "terraform_env=${{ inputs.TERRAFORM_ENV }}"
 
       - name: Provision infra and backend using terraform 
@@ -56,13 +56,13 @@ jobs:
         run: |
           terraform -chdir=${{ env.TERRAFORM_DIR }} init
           terraform -chdir=${{ env.TERRAFORM_DIR }} apply -auto-approve \
-            -var="project_base_dir=$(pwd)"
+            -var="project_base_dir=$GITHUB_WORKSPACE"
 
       - name: Upload terraform tf files to s3 bucket using ansible
         if: ${{ success() }}
         run: |
           ansible-playbook ${{ env.ANSIBLE_DIR }}/tffiles_upload.yaml \
-            -e "project_base_dir=$(pwd)" \
+            -e "project_base_dir=$GITHUB_WORKSPACE" \
             -e "terraform_env=${{ inputs.TERRAFORM_ENV }}"
 
       - name: Extract values from terraform tfstate file to be 
@@ -71,25 +71,25 @@ jobs:
         run: |
           echo "S3_BUCKET_NAME=$(terraform output \
             -state=${{ env.TERRAFORM_DIR }}/terraform.tfstate \
-            -raw s3_bucket_name)" >> ${{ github.env }}
+            -raw s3_bucket_name)" >> $GITHUB_ENV
 
           echo "API_URL=$(terraform output \
             -state=${{ env.TERRAFORM_DIR }}/terraform.tfstate \
-            -raw api_url)" >> ${{ github.env }}
+            -raw api_url)" >> $GITHUB_ENV
 
           echo "CLOUDFRONT_DISTRIBUTION_ID=$(terraform output \
             -state=${{ env.TERRAFORM_DIR }}/terraform.tfstate \
-            -raw cloudfront_distribution_id)" >> ${{ github.env }}
+            -raw cloudfront_distribution_id)" >> $GITHUB_ENV
 
           echo "WEBSITE_URL=$(terraform output \
             -state=${{ env.TERRAFORM_DIR }}/terraform.tfstate \
-            -raw website_url)" >> ${{ github.env }}
+            -raw website_url)" >> $GITHUB_ENV
 
       - name: Deploy website frontend files to env using ansible
         if: ${{ success() }}
         run: |
           ansible-playbook ${{ env.ANSIBLE_DIR }}/website_deploy.yaml \
-            -e "project_base_dir=$(pwd)" \
+            -e "project_base_dir=$GITHUB_WORKSPACE" \
             -e "s3_bucket_name=$S3_BUCKET_NAME" \
             -e "api_url=$API_URL" \
             -e "cloudfront_distribution_id=$CLOUDFRONT_DISTRIBUTION_ID"
