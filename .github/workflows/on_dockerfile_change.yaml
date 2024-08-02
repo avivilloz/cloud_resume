@@ -1,0 +1,62 @@
+name: Build docker image on dockerfile change
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'infra/Dockerfile'
+      - 'tests/frontend/Dockerfile'
+      - 'tests/backend/Dockerfile'
+
+jobs:
+  modified-dir-detection:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: dorny/paths-filter@master
+        id: modified-dir-detection
+        with:
+          filters: |
+            DEPLOY:
+                - 'infra/Dockerfile'
+            TEST_FRONTEND:
+                - 'tests/frontend/Dockerfile'
+            TEST_BACKEND:
+                - 'tests/backend/Dockerfile'
+    outputs:
+      DEPLOY: ${{ steps.modified-dir-detection.outputs.DEPLOY }}
+      TEST_FRONTEND: ${{ steps.modified-dir-detection.outputs.TEST_FRONTEND }}
+      TEST_BACKEND: ${{ steps.modified-dir-detection.outputs.TEST_BACKEND }}
+
+  build-deploy-docker-image:
+    needs: [modified-dir-detection]
+    uses: ./.github/workflows/build_docker_image.yaml
+    if: ${{ needs.modified-dir-detection.outputs.DEPLOY == 'true' }}
+    with:
+      DOCKERFILE_PATH: ./infra/Dockerfile
+      DOCKER_IMAGE: avivilloz/cloud-resume:deploy
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  build-test-frontend-docker-image:
+    needs: [modified-dir-detection]
+    uses: ./.github/workflows/build_docker_image.yaml
+    if: ${{ needs.modified-dir-detection.outputs.TEST_FRONTEND == 'true' }}
+    with:
+      DOCKERFILE_PATH: ./tests/frontend/Dockerfile
+      DOCKER_IMAGE: avivilloz/cloud-resume:test-frontend
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  build-test-backend-docker-image:
+    needs: [modified-dir-detection]
+    uses: ./.github/workflows/build_docker_image.yaml
+    if: ${{ needs.modified-dir-detection.outputs.TEST_BACKEND == 'true' }}
+    with:
+      DOCKERFILE_PATH: ./tests/backend/Dockerfile
+      DOCKER_IMAGE: avivilloz/cloud-resume:test-backend
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}

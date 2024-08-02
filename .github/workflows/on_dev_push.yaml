@@ -8,22 +8,12 @@ on:
       - 'backend/**'
 
 jobs:
-  build-deploy-docker-image:
-    uses: ./.github/workflows/build_docker_image.yaml
-    with:
-      DOCKERFILE_PATH: ./infra/Dockerfile
-      DOCKER_IMAGE: avivilloz/cloud-resume:deploy
-    secrets:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-
   dev-env-setup:
-    needs: [build-deploy-docker-image]
     uses: ./.github/workflows/deploy.yaml
     with:
       TERRAFORM_ENV: development
       AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
-      DOCKER_IMAGE: ${{ needs.build-deploy-docker-image.outputs.DOCKER_IMAGE }}
+      DOCKER_IMAGE: avivilloz/cloud-resume:deploy
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -53,9 +43,6 @@ jobs:
       LAB: "backend"
       PYTEST_ARGS: "--api-url=${{ needs.dev-env-setup.outputs.API_URL }}"
       DOCKER_IMAGE: avivilloz/cloud-resume:test-backend
-    secrets:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
   frontend-tests:
     needs: [dev-env-setup, modified-dir-detection]
@@ -65,12 +52,9 @@ jobs:
       LAB: "frontend"
       PYTEST_ARGS: "--website-url=${{ needs.dev-env-setup.outputs.WEBSITE_URL }}"
       DOCKER_IMAGE: avivilloz/cloud-resume:test-frontend
-    secrets:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
   website-deployment:
-    needs: [build-deploy-docker-image, backend-tests, frontend-tests]
+    needs: [backend-tests, frontend-tests]
     uses: ./.github/workflows/deploy.yaml
     if: |
       always() &&
@@ -79,7 +63,7 @@ jobs:
     with:
       TERRAFORM_ENV: production
       AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
-      DOCKER_IMAGE: ${{ needs.build-deploy-docker-image.outputs.DOCKER_IMAGE }}
+      DOCKER_IMAGE: avivilloz/cloud-resume:deploy
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
