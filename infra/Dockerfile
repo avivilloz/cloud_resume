@@ -9,5 +9,4 @@ COPY . .
 
 # Install dependencies
 RUN pacman -Sy 
-RUN pacman -S --needed --noconfirm python-pip terraform ansible
-RUN python -m pip install boto3 botocore
+RUN pacman -S --needed --noconfirm python-boto3 python-botocore terraform ansible
